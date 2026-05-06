@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Conceptos K-Means{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Conceptos Principales de K-Means</h1>
+  <p>Algoritmo de aprendizaje no supervisado que agrupa datos en K clústeres minimizando la varianza interna.</p>
+</div>
+
+<div class="concept-grid">
+
+  <div class="concept-card">
+    <div class="concept-card__icon"><i class="fa-solid fa-bullseye"></i></div>
+    <h3>Centroide</h3>
+    <p>Punto promedio que representa el centro geométrico de un clúster. Se recalcula en cada iteración como la media de todos los puntos asignados al grupo.</p>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card__icon"><i class="fa-solid fa-ruler"></i></div>
+    <h3>Distancia Euclidiana</h3>
+    <p>Métrica usada para asignar cada punto al centroide más cercano: d = √Σ(xᵢ − μᵢ)². Las variables se normalizan antes para que todas contribuyan por igual.</p>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card__icon"><i class="fa-solid fa-fire"></i></div>
+    <h3>Inercia (WCSS)</h3>
+    <p>Suma de cuadrados de las distancias de cada punto a su centroide. Cuanto menor la inercia, más compactos son los clústeres.</p>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card__icon"><i class="fa-solid fa-chart-line"></i></div>
+    <h3>Método del Codo</h3>
+    <p>Gráfica de inercia vs. K. El punto de inflexión donde la curva forma un "codo" indica el K óptimo: agregar más clústeres aporta un beneficio marginal.</p>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card__icon"><i class="fa-solid fa-rotate"></i></div>
+    <h3>Convergencia</h3>
+    <p>El algoritmo itera entre asignación de puntos y recálculo de centroides hasta que las asignaciones no cambian entre iteraciones sucesivas.</p>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card__icon"><i class="fa-solid fa-scale-balanced"></i></div>
+    <h3>Normalización</h3>
+    <p>Antes de K-Means es indispensable escalar los datos. Sin esto, variables de mayor magnitud (p. ej. precios en miles) dominarían la distancia euclidiana.</p>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card__icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+    <h3>K-Means++</h3>
+    <p>Estrategia de inicialización que dispersa los centroides iniciales, reduciendo el riesgo de converger a un mínimo local. Se activa con <code>init='k-means++'</code>.</p>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card__icon"><i class="fa-solid fa-compress"></i></div>
+    <h3>PCA (Reducción)</h3>
+    <p>El Análisis de Componentes Principales proyecta los datos de 5D a 2D para visualización, preservando la mayor varianza posible.</p>
+  </div>
+
+</div>
+
+<div class="card" style="margin-top: 24px">
+  <h2>Algoritmo paso a paso</h2>
+  <div class="steps">
+    <div class="step"><p>Elegir K centroides iniciales (aleatorios o con K-Means++).</p></div>
+    <div class="step"><p>Asignar cada punto al centroide más cercano usando distancia euclidiana en espacio normalizado.</p></div>
+    <div class="step"><p>Recalcular cada centroide como el promedio de los puntos de su clúster.</p></div>
+    <div class="step"><p>Repetir pasos 2 y 3 hasta convergencia o hasta alcanzar el máximo de iteraciones.</p></div>
+    <div class="step"><p>Evaluar la calidad con la inercia total e interpretar las características de cada clúster.</p></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Ventajas y limitaciones</h2>
+  <div class="two-col">
+    <div>
+      <h3 class="text-success"><i class="fa-solid fa-circle-check"></i> Ventajas</h3>
+      <ul>
+        <li>Eficiente con grandes volúmenes de datos.</li>
+        <li>Fácil de implementar e interpretar.</li>
+        <li>Resultados reproducibles con <code>random_state</code>.</li>
+        <li>Escalable con variantes como Mini-Batch K-Means.</li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="text-danger"><i class="fa-solid fa-triangle-exclamation"></i> Limitaciones</h3>
+      <ul>
+        <li>Requiere definir K antes de ejecutar.</li>
+        <li>Sensible a outliers y escala de variables.</li>
+        <li>Asume clústeres esféricos y de tamaño similar.</li>
+        <li>Puede converger a mínimos locales.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

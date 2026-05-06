@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}Ejecución — K-Means{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Ejecución del Modelo</h1>
+  <p>Selecciona el número de clústeres y ejecuta K-Means sobre los datos de Amazon.</p>
+</div>
+
+<div class="card">
+  <h2>Configuración</h2>
+  <form method="POST" action="/ejecucion" class="k-form">
+    <label for="k-range">K =</label>
+    <input type="range" id="k-range" name="k" min="2" max="10" value="{{ k }}" />
+    <span class="k-form__value" id="k-display">{{ k }}</span>
+    <button type="submit" class="btn">
+      <i class="fa-solid fa-play"></i> Ejecutar
+    </button>
+  </form>
+  <p class="text-muted" style="margin-top: 12px; font-size: 0.85rem;">
+    El valor recomendado es <strong>K = 4</strong> según el método del codo.
+    <a href="/codo">Ver justificación</a>.
+  </p>
+</div>
+
+<div class="alert alert--success">
+  <i class="fa-solid fa-circle-check"></i>
+  <span>
+    Modelo ejecutado con <strong>K = {{ result.n_clusters }}</strong> sobre
+    <strong>{{ result.total_registros }}</strong> productos.
+    Varianza explicada por PCA: PC1 = {{ result.varianza_pca[0] }}%,
+    PC2 = {{ result.varianza_pca[1] }}%.
+  </span>
+</div>
+
+<div class="stat-grid">
+  {% for c, datos in result.summary.items() %}
+  <div class="stat-card">
+    <div class="stat-card__value cluster-{{ c }}">{{ datos.count }}</div>
+    <div class="stat-card__label">Clúster {{ c }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <h2>Resumen estadístico por clúster</h2>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Clúster</th><th>Productos</th>
+          <th>Precio Dto. prom. (₹)</th>
+          <th>Descuento prom. (%)</th>
+          <th>Rating prom.</th>
+          <th>Reseñas prom.</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c, datos in result.summary.items() %}
+        <tr>
+          <td class="cluster-{{ c }}">Clúster {{ c }}</td>
+          <td>{{ datos.count }}</td>
+          <td>₹ {{ datos.precio_promedio | int }}</td>
+          <td>{{ datos.descuento_promedio }}%</td>
+          <td>{{ datos.rating_promedio }}</td>
+          <td>{{ datos.resenas_promedio | int }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Todos los productos con etiqueta de clúster</h2>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th><th>Producto</th>
+          <th>Precio Dto. (₹)</th><th>Precio Real (₹)</th>
+          <th>Dto. (%)</th><th>Rating</th><th>Reseñas</th><th>Clúster</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i, row in enumerate(result.tabla) %}
+        <tr>
+          <td>{{ i + 1 }}</td>
+          <td>{{ row['Producto'] }}</td>
+          <td>{{ row['Precio Dto. (₹)'] }}</td>
+          <td>{{ row['Precio Real (₹)'] }}</td>
+          <td>{{ row['Descuento (%)'] }}</td>
+          <td>{{ row['Rating'] }}</td>
+          <td>{{ row['N° Reseñas'] }}</td>
+          <td class="cluster-{{ row['Clúster'] }}">{{ row['Clúster'] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const range = document.getElementById('k-range');
+  const display = document.getElementById('k-display');
+  range.addEventListener('input', () => { display.textContent = range.value; });
+</script>
+{% endblock %}

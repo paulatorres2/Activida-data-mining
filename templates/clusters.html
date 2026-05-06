@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Clústeres — K-Means{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Visualización de Clústeres</h1>
+  <p>Proyección PCA 2D de los {{ result.total_registros }} productos agrupados en {{ result.n_clusters }} clústeres.</p>
+</div>
+
+<div class="card">
+  <h2>Gráfica de dispersión — PCA 2D</h2>
+  <p>
+    Los datos se proyectan a 2 dimensiones con PCA.
+    PC1 y PC2 explican el
+    <strong>{{ result.varianza_pca[0] + result.varianza_pca[1] }}%</strong>
+    de la varianza total. Cada punto es un producto; su color indica el clúster asignado
+    y las marcas <strong>×</strong> corresponden a los centroides.
+  </p>
+  <img class="chart-img" src="data:image/png;base64,{{ charts.clusters }}" alt="Gráfica de dispersión por clúster" />
+</div>
+
+<div class="card">
+  <h2>Distribución de productos por clúster</h2>
+  <div style="margin-bottom: 12px;">
+    {% for c, datos in result.summary.items() %}
+    <span class="badge badge--{{ c }}">Clúster {{ c }}: {{ datos.count }}</span>
+    {% endfor %}
+  </div>
+  <img class="chart-img" src="data:image/png;base64,{{ charts.distribution }}" alt="Distribución por clúster" />
+</div>
+{% endblock %}

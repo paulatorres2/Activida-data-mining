@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}K-Means — Amazon{% endblock %}</title>
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plh7eecyn6CafxmKoweBQ0L0n5c2w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar__brand">
+    <div class="sidebar__brand-title">K&#8209;<span>Means</span></div>
+    <div class="sidebar__brand-sub">Amazon Sales Dataset</div>
+  </div>
+
+  <div class="sidebar__nav">
+    {% set links = [
+      ('descripcion', 'fa-file-lines',   'Descripción'),
+      ('dataset',     'fa-table',        'Dataset'),
+      ('conceptos',   'fa-brain',        'Conceptos K-Means'),
+      ('ejecucion',   'fa-gears',        'Ejecución'),
+      ('clusters',    'fa-circle-dot',   'Clústeres'),
+      ('centroides',  'fa-crosshairs',   'Centroides'),
+      ('codo',        'fa-chart-line',   'Método del Codo'),
+      ('interpretacion', 'fa-lightbulb', 'Interpretación'),
+    ] %}
+    {% for endpoint, icon, label in links %}
+    <a href="{{ url_for(endpoint) }}"
+       class="sidebar__link {{ 'sidebar__link--active' if current_endpoint == endpoint }}">
+      <i class="fa-solid {{ icon }}"></i>
+      <span>{{ label }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</nav>
+
+<main class="main">
+  {% block content %}{% endblock %}
+</main>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>
