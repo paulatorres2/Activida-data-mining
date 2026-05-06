@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Método del Codo — K-Means{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Método del Codo</h1>
+  <p>Selección del número óptimo de clústeres mediante la gráfica de inercia.</p>
+</div>
+
+<div class="card">
+  <h2>¿Qué es el método del codo?</h2>
+  <p>
+    K-Means requiere definir K antes de ejecutarse. El método del codo evalúa la
+    <strong>inercia</strong> (suma de cuadrados intra-clúster) para K de 1 a 10.
+    A medida que K aumenta, la inercia decrece; el punto donde la reducción se vuelve
+    marginal — formando visualmente el "codo" de un brazo — indica el K óptimo.
+  </p>
+</div>
+
+<div class="card">
+  <h2>Gráfica de inercia</h2>
+  <img class="chart-img" src="data:image/png;base64,{{ chart }}" alt="Método del codo" />
+</div>
+
+<div class="card">
+  <h2>Tabla de inercias por K</h2>
+  <div class="table-wrap">
+    <table class="table" style="max-width: 360px">
+      <thead>
+        <tr><th>K</th><th>Inercia</th></tr>
+      </thead>
+      <tbody>
+        {% for i, iner in enumerate(inertias) %}
+        <tr class="{{ 'is-optimal' if i + 1 == k_optimo }}">
+          <td>{{ i + 1 }}{% if i + 1 == k_optimo %} — óptimo{% endif %}</td>
+          <td>{{ iner | round(2) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Justificación de K = {{ k_optimo }}</h2>
+  <p>
+    La inercia cae de forma pronunciada de K=1 a K={{ k_optimo }}. A partir de
+    K={{ k_optimo + 1 }} la reducción por cada clúster adicional se vuelve marginal,
+    lo que indica que el beneficio de añadir más grupos no justifica la mayor complejidad
+    del modelo. Desde la perspectiva de negocio, {{ k_optimo }} segmentos son suficientemente
+    granulares para capturar perfiles de producto distintos y fáciles de interpretar.
+  </p>
+</div>
+{% endblock %}

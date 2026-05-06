@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Dataset — K-Means{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Amazon Sales Dataset</h1>
+  <p>Fuente: Kaggle — karkavelrajaj. Productos vendidos en Amazon India con precios, descuentos, calificaciones y reseñas.</p>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-card__value text-primary">{{ result.total_registros }}</div>
+    <div class="stat-card__label">Registros válidos</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__value text-danger">5</div>
+    <div class="stat-card__label">Variables usadas</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__value text-success">16</div>
+    <div class="stat-card__label">Columnas originales</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__value" style="color:#c19a0e">{{ result.n_clusters }}</div>
+    <div class="stat-card__label">Clústeres formados</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Variables del dataset original</h2>
+  <div class="table-wrap">
+    <table class="table var-table">
+      <thead>
+        <tr>
+          <th>Variable</th><th>Tipo</th><th>Descripción</th><th>Usada</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>product_id</td><td>Texto</td><td>Identificador único del producto</td><td>No</td></tr>
+        <tr><td>product_name</td><td>Texto</td><td>Nombre completo del producto</td><td>Solo etiqueta</td></tr>
+        <tr><td>category</td><td>Texto</td><td>Categoría jerárquica del producto</td><td>Solo etiqueta</td></tr>
+        <tr><td><strong>discounted_price</strong></td><td>Numérico</td><td>Precio final con descuento aplicado (₹)</td><td><i class="fa-solid fa-check text-success"></i></td></tr>
+        <tr><td><strong>actual_price</strong></td><td>Numérico</td><td>Precio original sin descuento (₹)</td><td><i class="fa-solid fa-check text-success"></i></td></tr>
+        <tr><td><strong>discount_percentage</strong></td><td>Numérico</td><td>Porcentaje de descuento sobre el precio real</td><td><i class="fa-solid fa-check text-success"></i></td></tr>
+        <tr><td><strong>rating</strong></td><td>Numérico</td><td>Calificación promedio del producto (1–5)</td><td><i class="fa-solid fa-check text-success"></i></td></tr>
+        <tr><td><strong>rating_count</strong></td><td>Numérico</td><td>Número total de calificaciones recibidas</td><td><i class="fa-solid fa-check text-success"></i></td></tr>
+        <tr><td>about_product</td><td>Texto</td><td>Descripción detallada del producto</td><td>No</td></tr>
+        <tr><td>user_id / user_name</td><td>Texto</td><td>Identificadores de usuarios reseñadores</td><td>No</td></tr>
+        <tr><td>review_*</td><td>Texto</td><td>Reseñas de los usuarios</td><td>No</td></tr>
+        <tr><td>img_link / product_link</td><td>URL</td><td>Enlace a imagen y página del producto</td><td>No</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Justificación de variables seleccionadas</h2>
+  <p>Se eligieron las <strong>5 variables numéricas</strong> que mejor capturan el perfil comercial de cada producto:</p>
+  <ul>
+    <li><strong>discounted_price:</strong> refleja el valor percibido por el comprador y define el segmento de precio.</li>
+    <li><strong>actual_price:</strong> precio de lista; junto con el precio descontado permite medir el margen de reducción.</li>
+    <li><strong>discount_percentage:</strong> mide la agresividad de la estrategia de descuento.</li>
+    <li><strong>rating:</strong> calidad percibida; separa productos bien valorados de los mediocres.</li>
+    <li><strong>rating_count:</strong> popularidad implícita; productos con miles de reseñas son muy distintos de los que tienen pocas.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>Proceso de limpieza aplicado</h2>
+  <ul>
+    <li>Eliminación del símbolo <code>₹</code> y comas en precios mediante expresión regular vectorizada.</li>
+    <li>Eliminación del símbolo <code>%</code> en descuentos y conversión a numérico.</li>
+    <li>Eliminación de comas en <code>rating_count</code> y conversión a numérico.</li>
+    <li>Descarte de filas con valores nulos en cualquiera de las 5 variables.</li>
+    <li>Descarte de productos con precio o conteo de reseñas igual a cero.</li>
+    <li>Capado del percentil 99 de <code>rating_count</code> para reducir el efecto de valores extremos.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>Muestra de datos procesados (primeros 30 registros)</h2>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th><th>Producto</th>
+          <th>Precio Dto. (₹)</th><th>Precio Real (₹)</th>
+          <th>Descuento (%)</th><th>Rating</th><th>N° Reseñas</th><th>Clúster</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i, row in enumerate(result.tabla[:30]) %}
+        <tr>
+          <td>{{ i + 1 }}</td>
+          <td>{{ row['Producto'] }}</td>
+          <td>{{ row['Precio Dto. (₹)'] }}</td>
+          <td>{{ row['Precio Real (₹)'] }}</td>
+          <td>{{ row['Descuento (%)'] }}</td>
+          <td>{{ row['Rating'] }}</td>
+          <td>{{ row['N° Reseñas'] }}</td>
+          <td class="cluster-{{ row['Clúster'] }}">{{ row['Clúster'] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

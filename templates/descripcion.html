@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Descripción — K-Means{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Segmentación de Productos Amazon con K-Means</h1>
+  <p>Agrupamiento no supervisado sobre el catálogo de Amazon India.</p>
+</div>
+
+<div class="card">
+  <h2>Planteamiento del problema</h2>
+  <p>
+    Amazon cuenta con miles de productos de distintas categorías, cada uno con un precio,
+    descuento, calificación y popularidad diferente. Sin una clasificación automática, es
+    difícil identificar patrones: ¿cuáles son los productos más económicos y populares?
+    ¿cuáles son caros con alto descuento? ¿cuáles tienen buena calificación pero bajo volumen?
+  </p>
+  <p>
+    Este proyecto aplica <strong>K-Means</strong> para segmentar los productos en grupos
+    homogéneos, permitiendo identificar patrones comerciales y apoyar decisiones de marketing.
+  </p>
+</div>
+
+<div class="card">
+  <h2>Objetivos</h2>
+  <ul>
+    <li>Preparar y limpiar el dataset de Amazon Sales para análisis numérico.</li>
+    <li>Seleccionar las variables más representativas del perfil comercial de cada producto.</li>
+    <li>Justificar el número de clústeres con el método del codo.</li>
+    <li>Visualizar e interpretar los segmentos resultantes.</li>
+    <li>Extraer conclusiones de negocio accionables a partir del agrupamiento.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>Metodología</h2>
+  <div class="steps">
+    <div class="step"><p><strong>Carga y limpieza.</strong> Eliminación de símbolos monetarios, caracteres especiales y valores nulos del CSV original.</p></div>
+    <div class="step"><p><strong>Selección de variables.</strong> Elección de las 5 variables numéricas que mejor capturan el perfil comercial.</p></div>
+    <div class="step"><p><strong>Normalización.</strong> Estandarización con StandardScaler para que todas las variables tengan igual peso en la distancia euclidiana.</p></div>
+    <div class="step"><p><strong>Método del codo.</strong> Ejecución de K-Means para K de 1 a 10, evaluando la inercia para seleccionar el K óptimo.</p></div>
+    <div class="step"><p><strong>K-Means con K=4.</strong> Entrenamiento del modelo final y asignación de etiquetas a cada producto.</p></div>
+    <div class="step"><p><strong>Reducción PCA.</strong> Proyección a 2D para visualización de los clústeres en gráfica de dispersión.</p></div>
+    <div class="step"><p><strong>Interpretación.</strong> Análisis del perfil de cada clúster a partir de los centroides y estadísticas descriptivas.</p></div>
+  </div>
+</div>
+{% endblock %}

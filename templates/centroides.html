@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Centroides — K-Means{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Centroides de los Clústeres</h1>
+  <p>El centroide es el vector promedio de cada grupo y representa el "producto típico" del segmento.</p>
+</div>
+
+<div class="card">
+  <h2>Valores originales de los centroides</h2>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Clúster</th>
+          <th>Precio Dto. (₹)</th><th>Precio Real (₹)</th>
+          <th>Descuento (%)</th><th>Rating</th><th>N° Reseñas</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c, vals in enumerate(result.centroids_rows) %}
+        <tr>
+          <td class="cluster-{{ c }}">Clúster {{ c }}</td>
+          <td>₹ {{ vals.discounted_price | round(0) | int }}</td>
+          <td>₹ {{ vals.actual_price | round(0) | int }}</td>
+          <td>{{ vals.discount_percentage | round(1) }}%</td>
+          <td>{{ vals.rating | round(2) }}</td>
+          <td>{{ vals.rating_count | round(0) | int }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Perfil comparativo normalizado</h2>
+  <p>
+    Los valores están normalizados en [0–1] para comparar variables de distinta escala.
+    Un valor de 1 indica el clúster con el valor más alto en esa variable.
+  </p>
+  <img class="chart-img" src="data:image/png;base64,{{ charts.centroids }}" alt="Gráfica de centroides" />
+</div>
+{% endblock %}

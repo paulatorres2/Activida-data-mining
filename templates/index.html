@@ -1,12 +1,677 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>K-Means — Amazon Sales Dataset</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c0: #E63946; --c1: #457B9D; --c2: #2A9D8F; --c3: #E9C46A;
+      --bg: #f4f6f9; --surface: #ffffff; --text: #1d2b3a; --muted: #5a6a7a;
+      --nav-bg: #1d2b3a; --nav-w: 220px; --radius: 10px;
+    }
+
+    body { display: flex; min-height: 100vh; font-family: 'Segoe UI', sans-serif;
+           background: var(--bg); color: var(--text); }
+
+    /* ── sidebar ── */
+    nav {
+      width: var(--nav-w); min-height: 100vh; background: var(--nav-bg);
+      display: flex; flex-direction: column; padding: 24px 0; position: sticky;
+      top: 0; flex-shrink: 0;
+    }
+    nav .brand { color: #fff; font-size: 1.1rem; font-weight: 700;
+                 padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,.1); }
+    nav .brand span { color: var(--c0); }
+    nav a {
+      display: block; padding: 11px 20px; color: rgba(255,255,255,.75);
+      text-decoration: none; font-size: .9rem; transition: background .15s, color .15s;
+    }
+    nav a:hover, nav a.active { background: rgba(255,255,255,.1); color: #fff; }
+    nav a.active { border-left: 3px solid var(--c0); }
+
+    /* ── main ── */
+    main { flex: 1; padding: 32px; max-width: 1100px; }
+    h1 { font-size: 1.75rem; margin-bottom: 8px; }
+    h2 { font-size: 1.35rem; margin: 28px 0 10px; color: var(--c1); }
+    h3 { font-size: 1.1rem; margin: 20px 0 8px; }
+    p, li { line-height: 1.7; color: var(--muted); margin-bottom: 8px; }
+    ul, ol { padding-left: 22px; margin-bottom: 12px; }
+
+    .card {
+      background: var(--surface); border-radius: var(--radius);
+      box-shadow: 0 2px 8px rgba(0,0,0,.07); padding: 24px; margin-bottom: 24px;
+    }
+    .tag {
+      display: inline-block; background: var(--c1); color: #fff;
+      font-size: .75rem; padding: 3px 10px; border-radius: 20px; margin-left: 8px;
+      vertical-align: middle;
+    }
+    .badge {
+      display: inline-block; padding: 4px 12px; border-radius: 20px;
+      font-size: .8rem; font-weight: 600; color: #fff; margin: 2px;
+    }
+    .badge-0 { background: var(--c0); } .badge-1 { background: var(--c1); }
+    .badge-2 { background: var(--c2); } .badge-3 { background: var(--c3); color:#333; }
+
+    /* grid stats */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 16px; margin-bottom: 20px; }
+    .stat { background: var(--surface); border-radius: var(--radius); padding: 16px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.06); text-align: center; }
+    .stat .num { font-size: 1.7rem; font-weight: 700; }
+    .stat .lbl { font-size: .8rem; color: var(--muted); margin-top: 4px; }
+
+    /* image */
+    .chart-img { width: 100%; max-width: 820px; display: block; margin: 16px auto;
+                 border-radius: var(--radius); box-shadow: 0 2px 10px rgba(0,0,0,.1); }
+
+    /* table */
+    .tbl-wrap { overflow-x: auto; margin-top: 16px; }
+    table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    th { background: var(--nav-bg); color: #fff; padding: 10px 12px; text-align: left;
+         font-weight: 600; white-space: nowrap; }
+    td { padding: 8px 12px; border-bottom: 1px solid #eef0f3; }
+    tr:hover td { background: #f0f4f8; }
+    .cl-0 { color: var(--c0); font-weight: 700; }
+    .cl-1 { color: var(--c1); font-weight: 700; }
+    .cl-2 { color: var(--c2); font-weight: 700; }
+    .cl-3 { color: #b5860d; font-weight: 700; }
+
+    /* form */
+    .k-form { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+    .k-form label { font-weight: 600; }
+    .k-form input[type=range] { width: 200px; accent-color: var(--c1); }
+    .k-form .k-val { font-size: 1.3rem; font-weight: 700; color: var(--c1); min-width: 24px; }
+    .k-form button {
+      background: var(--c1); color: #fff; border: none; padding: 8px 22px;
+      border-radius: 6px; font-size: .95rem; cursor: pointer; transition: background .2s;
+    }
+    .k-form button:hover { background: #335f7a; }
+
+    /* concepts grid */
+    .concepts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; }
+    .concept-card { background: var(--surface); border-radius: var(--radius); padding: 20px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,.07); border-top: 4px solid var(--c1); }
+    .concept-card .icon { font-size: 1.8rem; margin-bottom: 8px; }
+    .concept-card h3 { margin: 0 0 8px; font-size: 1rem; color: var(--text); }
+
+    /* variable table */
+    .var-table td:first-child { font-weight: 600; color: var(--c1); width: 200px; }
+
+    /* interpretation cluster cards */
+    .cl-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; }
+    .cl-card { border-radius: var(--radius); padding: 18px;
+               box-shadow: 0 2px 8px rgba(0,0,0,.08); color: #fff; }
+    .cl-card h3 { font-size: 1rem; margin-bottom: 8px; }
+    .cl-card p { color: rgba(255,255,255,.88); font-size: .87rem; }
+    .cl-card-0 { background: var(--c0); }
+    .cl-card-1 { background: var(--c1); }
+    .cl-card-2 { background: var(--c2); }
+    .cl-card-3 { background: #c19a0e; }
+
+    /* algorithm steps */
+    .steps { counter-reset: step; display: flex; flex-direction: column; gap: 12px; }
+    .step { display: flex; gap: 14px; align-items: flex-start; }
+    .step::before { counter-increment: step; content: counter(step);
+      background: var(--c1); color: #fff; border-radius: 50%; width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .85rem; flex-shrink: 0; margin-top: 3px; }
+
+    /* breadcrumb */
+    .breadcrumb { font-size: .82rem; color: var(--muted); margin-bottom: 20px; }
+    .breadcrumb span { color: var(--c0); font-weight: 600; }
+
+    /* alert box */
+    .alert { border-radius: var(--radius); padding: 14px 18px; margin-bottom: 16px;
+             font-size: .9rem; }
+    .alert-info { background: #dbeafe; color: #1e3a5f; border-left: 4px solid var(--c1); }
+    .alert-success { background: #d1fae5; color: #064e3b; border-left: 4px solid var(--c2); }
+
+    @media (max-width: 700px) {
+      nav { width: 60px; } nav .brand, nav a span { display: none; }
+      main { padding: 16px; }
+    }
+  </style>
 </head>
 <body>
-    <h1>Datos</h1>
-    <p>{{ info }}</p>
+
+<!-- ══════════════════ SIDEBAR ══════════════════ -->
+<nav>
+  <div class="brand">K&#8209;<span>Means</span><br><small style="font-weight:400;color:rgba(255,255,255,.5)">Amazon Dataset</small></div>
+  <a href="/"          class="{{ 'active' if seccion=='descripcion' else '' }}">📋 Descripción</a>
+  <a href="/dataset"   class="{{ 'active' if seccion=='dataset' else '' }}">📊 Dataset</a>
+  <a href="/conceptos" class="{{ 'active' if seccion=='conceptos' else '' }}">🧠 Conceptos K-Means</a>
+  <a href="/ejecucion" class="{{ 'active' if seccion=='ejecucion' else '' }}">⚙️ Ejecución del Modelo</a>
+  <a href="/clusters"  class="{{ 'active' if seccion=='clusters' else '' }}">🔵 Visualización Clústeres</a>
+  <a href="/centroides"class="{{ 'active' if seccion=='centroides' else '' }}">🎯 Centroides</a>
+  <a href="/codo"      class="{{ 'active' if seccion=='codo' else '' }}">📈 Método del Codo</a>
+  <a href="/interpretacion" class="{{ 'active' if seccion=='interpretacion' else '' }}">💡 Interpretación</a>
+</nav>
+
+<!-- ══════════════════ MAIN ══════════════════ -->
+<main>
+
+{% if seccion == 'descripcion' %}
+<!-- ─── DESCRIPCIÓN DEL PROBLEMA ─── -->
+<div class="breadcrumb">Inicio / <span>Descripción del Problema</span></div>
+<h1>Segmentación de Productos de Amazon mediante K-Means</h1>
+
+<div class="card">
+  <h2>¿Cuál es el problema?</h2>
+  <p>
+    Amazon cuenta con miles de productos de distintas categorías. Cada producto tiene un precio,
+    un descuento, una calificación y una popularidad diferente. Sin una clasificación inteligente,
+    es difícil identificar patrones de comportamiento entre los productos: ¿cuáles son los más
+    económicos y populares? ¿cuáles son caros con alto descuento? ¿cuáles tienen buena
+    calificación pero poco volumen de ventas?
+  </p>
+  <p>
+    Este proyecto aplica el algoritmo de agrupamiento <strong>K-Means</strong> para segmentar
+    automáticamente los productos del dataset de Amazon en grupos homogéneos, permitiendo
+    identificar patrones comerciales, apoyar decisiones de marketing y comprender el
+    comportamiento del catálogo de productos.
+  </p>
+</div>
+
+<div class="card">
+  <h2>Objetivos</h2>
+  <ul>
+    <li>Preparar y limpiar el dataset de Amazon Sales para su análisis.</li>
+    <li>Seleccionar variables relevantes para el proceso de clustering.</li>
+    <li>Aplicar K-Means con un valor de K justificado mediante el método del codo.</li>
+    <li>Visualizar e interpretar los clústeres resultantes.</li>
+    <li>Extraer conclusiones de negocio accionables a partir del agrupamiento.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>Metodología general</h2>
+  <div class="steps">
+    <div class="step"><div><strong>Carga y limpieza de datos.</strong> Eliminación de símbolos monetarios, caracteres especiales y valores nulos.</div></div>
+    <div class="step"><div><strong>Selección de variables.</strong> Elección de las 5 variables numéricas más relevantes para el clustering.</div></div>
+    <div class="step"><div><strong>Normalización.</strong> Estandarización con StandardScaler para que todas las variables tengan igual peso.</div></div>
+    <div class="step"><div><strong>Método del codo.</strong> Ejecución de K-Means para K de 1 a 10, evaluando la inercia para seleccionar el K óptimo.</div></div>
+    <div class="step"><div><strong>Aplicación de K-Means.</strong> Entrenamiento del modelo con K=4 y asignación de etiquetas a cada producto.</div></div>
+    <div class="step"><div><strong>Reducción dimensional.</strong> Proyección de los datos a 2D con PCA para su visualización.</div></div>
+    <div class="step"><div><strong>Interpretación.</strong> Análisis del perfil de cada clúster con base en los centroides y estadísticas.</div></div>
+  </div>
+</div>
+
+
+{% elif seccion == 'dataset' %}
+<!-- ─── DATASET ─── -->
+<div class="breadcrumb">Inicio / <span>Explicación del Dataset</span></div>
+<h1>Amazon Sales Dataset <span class="tag">Kaggle</span></h1>
+
+<div class="alert alert-info">
+  Fuente: <strong>Amazon Sales Dataset</strong> — Kaggle (karkavelrajaj).
+  El dataset contiene información de productos vendidos en Amazon India con sus precios,
+  descuentos, calificaciones y reseñas de usuarios.
+</div>
+
+{% if info %}
+<div class="stats">
+  <div class="stat"><div class="num" style="color:var(--c1)">{{ info.total_registros }}</div><div class="lbl">Registros válidos</div></div>
+  <div class="stat"><div class="num" style="color:var(--c0)">5</div><div class="lbl">Variables usadas</div></div>
+  <div class="stat"><div class="num" style="color:var(--c2)">16</div><div class="lbl">Columnas originales</div></div>
+  <div class="stat"><div class="num" style="color:#c19a0e">{{ info.n_clusters }}</div><div class="lbl">Clústeres formados</div></div>
+</div>
+{% endif %}
+
+<div class="card">
+  <h2>Variables del Dataset Original</h2>
+  <div class="tbl-wrap">
+  <table class="var-table">
+    <tr><th>Variable</th><th>Tipo</th><th>Descripción</th><th>¿Usada?</th></tr>
+    <tr><td>product_id</td><td>Texto</td><td>Identificador único del producto</td><td>No</td></tr>
+    <tr><td>product_name</td><td>Texto</td><td>Nombre completo del producto</td><td>Solo etiqueta</td></tr>
+    <tr><td>category</td><td>Texto</td><td>Categoría jerárquica del producto</td><td>Solo etiqueta</td></tr>
+    <tr><td><strong>discounted_price</strong></td><td>Numérico</td><td>Precio final con descuento aplicado (₹)</td><td>✅ Sí</td></tr>
+    <tr><td><strong>actual_price</strong></td><td>Numérico</td><td>Precio original sin descuento (₹)</td><td>✅ Sí</td></tr>
+    <tr><td><strong>discount_percentage</strong></td><td>Numérico</td><td>Porcentaje de descuento sobre el precio real</td><td>✅ Sí</td></tr>
+    <tr><td><strong>rating</strong></td><td>Numérico</td><td>Calificación promedio del producto (1–5)</td><td>✅ Sí</td></tr>
+    <tr><td><strong>rating_count</strong></td><td>Numérico</td><td>Número total de calificaciones recibidas</td><td>✅ Sí</td></tr>
+    <tr><td>about_product</td><td>Texto</td><td>Descripción detallada del producto</td><td>No</td></tr>
+    <tr><td>user_id / user_name</td><td>Texto</td><td>Identificadores de usuarios que reseñaron</td><td>No</td></tr>
+    <tr><td>review_id / review_title / review_content</td><td>Texto</td><td>Reseñas de los usuarios</td><td>No</td></tr>
+    <tr><td>img_link / product_link</td><td>URL</td><td>Enlace a imagen y a la página del producto</td><td>No</td></tr>
+  </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Justificación de Variables Seleccionadas</h2>
+  <p>Se seleccionaron las <strong>5 variables numéricas</strong> que mejor capturan el perfil comercial de cada producto:</p>
+  <ul>
+    <li><strong>discounted_price:</strong> refleja el valor percibido por el comprador y define el segmento de precio al que pertenece el producto.</li>
+    <li><strong>actual_price:</strong> indica el precio de lista; junto con el precio descontado permite calcular el margen de reducción.</li>
+    <li><strong>discount_percentage:</strong> mide la agresividad de la estrategia de descuento, diferenciando productos en oferta fuerte de los de precio estable.</li>
+    <li><strong>rating:</strong> calidad percibida; separa productos bien valorados de los mediocres o inconsistentes.</li>
+    <li><strong>rating_count:</strong> popularidad y volumen de ventas implícito; productos con miles de reseñas son muy diferentes de los que tienen pocas.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>Proceso de Limpieza</h2>
+  <ul>
+    <li>Eliminación del símbolo <code>₹</code> y comas en precios numéricos.</li>
+    <li>Eliminación del símbolo <code>%</code> en descuentos y conversión a float.</li>
+    <li>Eliminación de comas en <code>rating_count</code> y conversión a numérico.</li>
+    <li>Descarte de filas con valores nulos en cualquiera de las 5 variables.</li>
+    <li>Descarte de productos con precio o conteo de reseñas igual a cero.</li>
+    <li>Capado del percentil 99 de <code>rating_count</code> para reducir el efecto de valores extremos.</li>
+  </ul>
+</div>
+
+{% if info %}
+<div class="card">
+  <h2>Muestra de Datos Procesados (primeros 30 registros)</h2>
+  <div class="tbl-wrap">
+  <table>
+    <tr>
+      <th>#</th><th>Producto</th><th>Precio Dto. (₹)</th>
+      <th>Precio Real (₹)</th><th>Descuento (%)</th>
+      <th>Rating</th><th>N° Reseñas</th><th>Clúster</th>
+    </tr>
+    {% for i, row in enumerate(info.tabla[:30]) %}
+    <tr>
+      <td>{{ i+1 }}</td>
+      <td>{{ row['Producto'] }}</td>
+      <td>{{ row['Precio con Dto. (₹)'] }}</td>
+      <td>{{ row['Precio Real (₹)'] }}</td>
+      <td>{{ row['Descuento (%)'] }}</td>
+      <td>{{ row['Rating'] }}</td>
+      <td>{{ row['N° Reseñas'] }}</td>
+      <td class="cl-{{ row['Clúster'] }}">{{ row['Clúster'] }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+</div>
+{% endif %}
+
+
+{% elif seccion == 'conceptos' %}
+<!-- ─── CONCEPTOS K-MEANS ─── -->
+<div class="breadcrumb">Inicio / <span>Conceptos K-Means</span></div>
+<h1>Conceptos Principales de K-Means</h1>
+
+<div class="alert alert-info">
+  K-Means es un algoritmo de aprendizaje <strong>no supervisado</strong> que agrupa datos en
+  <em>K</em> clústeres minimizando la varianza interna de cada grupo.
+</div>
+
+<div class="concepts">
+  <div class="concept-card">
+    <div class="icon">🎯</div>
+    <h3>Centroide</h3>
+    <p>Punto promedio que representa el centro geométrico de un clúster. Se recalcula en cada iteración como la media de todos los puntos asignados al grupo.</p>
+  </div>
+  <div class="concept-card">
+    <div class="icon">📏</div>
+    <h3>Distancia Euclidiana</h3>
+    <p>Métrica usada para asignar cada punto al centroide más cercano. Para vectores en ℝⁿ: d = √Σ(xᵢ − μᵢ)²</p>
+  </div>
+  <div class="concept-card">
+    <div class="icon">🔥</div>
+    <h3>Inercia (WCSS)</h3>
+    <p>Suma de cuadrados de las distancias de cada punto a su centroide. A menor inercia, más compactos son los clústeres.</p>
+  </div>
+  <div class="concept-card">
+    <div class="icon">📈</div>
+    <h3>Método del Codo</h3>
+    <p>Gráfica de inercia vs. K. El punto donde la curva forma un "codo" (inflexión) indica el K óptimo: agregar más clústeres aporta poco beneficio.</p>
+  </div>
+  <div class="concept-card">
+    <div class="icon">🔄</div>
+    <h3>Convergencia</h3>
+    <p>El algoritmo itera asignación + recálculo de centroides hasta que las asignaciones no cambian entre iteraciones sucesivas.</p>
+  </div>
+  <div class="concept-card">
+    <div class="icon">⚖️</div>
+    <h3>Normalización</h3>
+    <p>Antes de K-Means es esencial escalar los datos (StandardScaler). Sin esto, variables con mayor magnitud (p. ej. precios) dominarían la distancia.</p>
+  </div>
+  <div class="concept-card">
+    <div class="icon">🌀</div>
+    <h3>K-Means++</h3>
+    <p>Estrategia de inicialización inteligente que dispersa los centroides iniciales, reduciendo el riesgo de converger a un mínimo local. Se activa con <code>init='k-means++'</code>.</p>
+  </div>
+  <div class="concept-card">
+    <div class="icon">🔬</div>
+    <h3>PCA (Reducción)</h3>
+    <p>El Análisis de Componentes Principales proyecta los datos de 5D a 2D para visualización, preservando la mayor varianza posible.</p>
+  </div>
+</div>
+
+<div class="card" style="margin-top:24px">
+  <h2>Algoritmo Paso a Paso</h2>
+  <div class="steps">
+    <div class="step"><div>Elegir K centroides iniciales aleatorios (o con K-Means++).</div></div>
+    <div class="step"><div>Asignar cada punto al centroide más cercano (distancia euclidiana en espacio normalizado).</div></div>
+    <div class="step"><div>Recalcular cada centroide como el promedio de los puntos de su clúster.</div></div>
+    <div class="step"><div>Repetir pasos 2–3 hasta que las asignaciones converjan o se alcance el máximo de iteraciones.</div></div>
+    <div class="step"><div>Evaluar la calidad con la inercia total y las características de cada clúster.</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Ventajas y Limitaciones</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <div>
+      <h3 style="color:var(--c2)">✅ Ventajas</h3>
+      <ul>
+        <li>Eficiente con grandes volúmenes de datos.</li>
+        <li>Fácil de implementar e interpretar.</li>
+        <li>Escalable con variantes como Mini-Batch K-Means.</li>
+        <li>Resultados reproducibles con <code>random_state</code>.</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="color:var(--c0)">⚠️ Limitaciones</h3>
+      <ul>
+        <li>Requiere definir K a priori.</li>
+        <li>Sensible a outliers y escala de variables.</li>
+        <li>Asume clústeres esféricos y de tamaño similar.</li>
+        <li>Puede converger a mínimos locales.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+{% elif seccion == 'ejecucion' %}
+<!-- ─── EJECUCIÓN DEL MODELO ─── -->
+<div class="breadcrumb">Inicio / <span>Ejecución del Modelo</span></div>
+<h1>Ejecución del Modelo K-Means</h1>
+
+<div class="card">
+  <h2>Seleccionar número de clústeres</h2>
+  <form method="POST" action="/ejecucion" class="k-form">
+    <label for="k_range">K =</label>
+    <input type="range" id="k_range" name="k" min="2" max="10"
+           value="{{ k or 4 }}" oninput="document.getElementById('kval').textContent=this.value">
+    <span class="k-val" id="kval">{{ k or 4 }}</span>
+    <button type="submit">Ejecutar</button>
+  </form>
+  <p style="font-size:.85rem">
+    El valor recomendado es <strong>K = 4</strong> según el método del codo
+    (ver sección <a href="/codo">Método del Codo</a>).
+  </p>
+</div>
+
+{% if info %}
+<div class="alert alert-success">
+  Modelo ejecutado con <strong>K = {{ info.n_clusters }}</strong> clústeres
+  sobre <strong>{{ info.total_registros }}</strong> productos.
+  Varianza explicada por PCA: PC1={{ info.varianza_pca[0] }}%, PC2={{ info.varianza_pca[1] }}%.
+</div>
+
+<div class="stats">
+{% for c, datos in info.resumen.items() %}
+  <div class="stat">
+    <div class="num" style="color:{{ ['var(--c0)','var(--c1)','var(--c2)','#c19a0e'][c|int] }}">{{ datos.count }}</div>
+    <div class="lbl">Clúster {{ c }} (productos)</div>
+  </div>
+{% endfor %}
+</div>
+
+<div class="card">
+  <h2>Resumen estadístico por clúster</h2>
+  <div class="tbl-wrap">
+  <table>
+    <tr>
+      <th>Clúster</th><th>Productos</th>
+      <th>Precio Dto. promedio (₹)</th>
+      <th>Precio Real promedio (₹)</th>
+      <th>Descuento promedio (%)</th>
+      <th>Rating promedio</th>
+      <th>Reseñas promedio</th>
+    </tr>
+    {% for c, datos in info.resumen.items() %}
+    <tr>
+      <td class="cl-{{ c }}">Clúster {{ c }}</td>
+      <td>{{ datos.count }}</td>
+      <td>₹ {{ datos.precio_promedio | int }}</td>
+      <td>—</td>
+      <td>{{ datos.descuento_promedio }}%</td>
+      <td>{{ datos.rating_promedio }}</td>
+      <td>{{ datos.resenas_promedio | int }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Todos los productos con etiqueta de clúster</h2>
+  <div class="tbl-wrap">
+  <table>
+    <tr>
+      <th>#</th><th>Producto</th><th>Precio Dto. (₹)</th>
+      <th>Precio Real (₹)</th><th>Dto. (%)</th>
+      <th>Rating</th><th>Reseñas</th><th>Clúster</th>
+    </tr>
+    {% for i, row in enumerate(info.tabla) %}
+    <tr>
+      <td>{{ i+1 }}</td>
+      <td>{{ row['Producto'] }}</td>
+      <td>{{ row['Precio con Dto. (₹)'] }}</td>
+      <td>{{ row['Precio Real (₹)'] }}</td>
+      <td>{{ row['Descuento (%)'] }}</td>
+      <td>{{ row['Rating'] }}</td>
+      <td>{{ row['N° Reseñas'] }}</td>
+      <td class="cl-{{ row['Clúster'] }}">{{ row['Clúster'] }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+</div>
+{% endif %}
+
+
+{% elif seccion == 'clusters' %}
+<!-- ─── VISUALIZACIÓN CLÚSTERES ─── -->
+<div class="breadcrumb">Inicio / <span>Visualización de Clústeres</span></div>
+<h1>Visualización de Clústeres</h1>
+
+{% if info %}
+<div class="card">
+  <h2>Gráfica de Dispersión — Proyección PCA 2D</h2>
+  <p>
+    Dado que el modelo trabaja en un espacio de 5 dimensiones, se aplica
+    <strong>Análisis de Componentes Principales (PCA)</strong> para proyectar los datos a 2D.
+    Los componentes PC1 y PC2 explican el <strong>{{ info.varianza_pca[0] + info.varianza_pca[1] }}%</strong>
+    de la varianza total. Cada punto representa un producto; su color indica el clúster asignado
+    y las ✕ negras corresponden a los centroides.
+  </p>
+  <img class="chart-img" src="data:image/png;base64,{{ info.grafica_clusters }}" alt="Gráfica de clústeres">
+</div>
+
+<div class="card">
+  <h2>Distribución de productos por clúster</h2>
+  <div style="text-align:center">
+    {% for c, datos in info.resumen.items() %}
+      <span class="badge badge-{{ c }}">Clúster {{ c }}: {{ datos.count }} productos</span>
+    {% endfor %}
+  </div>
+  <img class="chart-img" src="data:image/png;base64,{{ info.grafica_distribucion }}" alt="Distribución por clúster">
+</div>
+{% endif %}
+
+
+{% elif seccion == 'centroides' %}
+<!-- ─── CENTROIDES ─── -->
+<div class="breadcrumb">Inicio / <span>Visualización de Centroides</span></div>
+<h1>Centroides de los Clústeres</h1>
+
+{% if info %}
+<div class="card">
+  <h2>¿Qué son los centroides?</h2>
+  <p>
+    El centroide de un clúster es el vector promedio de todas las observaciones pertenecientes
+    a ese grupo. Representa el "producto típico" del clúster y es la base para interpretar
+    qué caracteriza a cada segmento.
+  </p>
+</div>
+
+<div class="card">
+  <h2>Perfil de Centroides (valores originales)</h2>
+  <div class="tbl-wrap">
+  <table>
+    <tr>
+      <th>Clúster</th>
+      <th>Precio Dto. (₹)</th>
+      <th>Precio Real (₹)</th>
+      <th>Descuento (%)</th>
+      <th>Rating</th>
+      <th>N° Reseñas</th>
+    </tr>
+    {% for c, vals in info.centroides.items() %}
+    <tr>
+      <td class="cl-{{ c }}">Clúster {{ c }}</td>
+      <td>₹ {{ vals.discounted_price | round(0) | int }}</td>
+      <td>₹ {{ vals.actual_price | round(0) | int }}</td>
+      <td>{{ vals.discount_percentage }}%</td>
+      <td>{{ vals.rating }}</td>
+      <td>{{ vals.rating_count | round(0) | int }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Gráfica Comparativa de Centroides (normalizada)</h2>
+  <p>
+    Para comparar variables de distinta escala, los valores están normalizados en el rango [0–1].
+    Un valor de 1 indica el clúster con el valor más alto en esa variable; 0 el más bajo.
+  </p>
+  <img class="chart-img" src="data:image/png;base64,{{ info.grafica_centroides }}" alt="Centroides">
+</div>
+{% endif %}
+
+
+{% elif seccion == 'codo' %}
+<!-- ─── MÉTODO DEL CODO ─── -->
+<div class="breadcrumb">Inicio / <span>Método del Codo</span></div>
+<h1>Método del Codo — Selección de K</h1>
+
+<div class="card">
+  <h2>¿Para qué sirve el método del codo?</h2>
+  <p>
+    K-Means requiere que el número de clústeres <em>K</em> sea definido antes de ejecutar el
+    algoritmo. El <strong>Método del Codo</strong> evalúa la <em>inercia</em> (suma de cuadrados
+    de las distancias intra-clúster) para valores de K de 1 a 10. A medida que K aumenta, la
+    inercia disminuye; sin embargo, llega un punto donde el beneficio marginal se vuelve
+    insignificante. Ese punto de inflexión, que visualmente asemeja el codo de un brazo, indica
+    el K óptimo.
+  </p>
+</div>
+
+{% if info %}
+<div class="card">
+  <h2>Gráfica de Inercia</h2>
+  <img class="chart-img" src="data:image/png;base64,{{ info.grafica_codo }}" alt="Método del codo">
+
+  <h3>Tabla de inercias por K</h3>
+  <div class="tbl-wrap">
+  <table style="max-width:420px">
+    <tr><th>K</th><th>Inercia</th></tr>
+    {% for i, iner in enumerate(info.inercias) %}
+    <tr {% if i+1 == info.n_clusters %}style="background:#dbeafe;font-weight:600"{% endif %}>
+      <td>{{ i+1 }}</td><td>{{ iner | round(2) }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Justificación de K = {{ info.n_clusters }}</h2>
+  <p>
+    Observando la gráfica, la inercia cae abruptamente de K=1 a K=4, mientras que para K≥5
+    la reducción se vuelve progresivamente menor. El punto <strong>K = 4</strong> corresponde
+    al "codo" donde la curva cambia de pendiente pronunciada a suave, indicando que añadir
+    más clústeres no aporta una mejora significativa en la compacidad interna. Además, desde
+    la perspectiva de negocio, 4 segmentos son suficientemente granulares para capturar
+    distintos perfiles de producto y fácilmente interpretables.
+  </p>
+</div>
+{% endif %}
+
+
+{% elif seccion == 'interpretacion' %}
+<!-- ─── INTERPRETACIÓN ─── -->
+<div class="breadcrumb">Inicio / <span>Interpretación de Resultados</span></div>
+<h1>Interpretación de Resultados</h1>
+
+{% if info %}
+<div class="cl-cards">
+  {% for c in range(info.n_clusters) %}
+  {% set entry = cluster_descs[c] %}
+  <div class="cl-card cl-card-{{ c }}">
+    <h3>Clúster {{ c }} — {{ entry[0] }}</h3>
+    <p>{{ entry[1] }}</p>
+    {% set datos_c = info.resumen[c] %}
+    <p style="margin-top:10px;font-size:.82rem;opacity:.9">
+      📦 {{ datos_c.count }} productos &nbsp;|&nbsp;
+      ⭐ {{ datos_c.rating_promedio }} rating &nbsp;|&nbsp;
+      💸 ₹{{ datos_c.precio_promedio | int }}
+    </p>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card" style="margin-top:24px">
+  <h2>Patrones identificados</h2>
+  <ul>
+    <li><strong>Segmentación por precio clara:</strong> K-Means separó naturalmente los productos en rangos de precio, sugiriendo que el precio es el factor más discriminante del dataset.</li>
+    <li><strong>Relación precio-popularidad:</strong> Los productos más económicos no son necesariamente los más populares; la popularidad (rating_count) forma su propio eje de diferenciación.</li>
+    <li><strong>Descuentos agresivos en productos baratos:</strong> El clúster de menor precio también presenta los descuentos más altos, lo que indica una estrategia de penetración de mercado.</li>
+    <li><strong>Calidad percibida consistente:</strong> El rating varía poco entre clústeres (todos cercanos a 4.0), sugiriendo que Amazon filtra productos de muy baja calidad.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>Selección del número de clústeres</h2>
+  <p>
+    Se eligió <strong>K = 4</strong> mediante el método del codo: la inercia decrece
+    significativamente de K=1 a K=4, y a partir de K=5 la reducción se vuelve marginal.
+    Desde la perspectiva de negocio, 4 segmentos son interpretables y accionables.
+  </p>
+</div>
+
+<div class="card">
+  <h2>Conclusiones</h2>
+  <ol>
+    <li>El algoritmo K-Means identificó <strong>{{ info.n_clusters }} segmentos</strong> con perfiles comerciales diferenciados en el catálogo de Amazon India.</li>
+    <li>Las variables de <strong>precio y popularidad</strong> son las más determinantes para la separación de los grupos.</li>
+    <li>La <strong>normalización previa</strong> fue esencial: sin ella, el precio habría dominado la distancia euclidiana y distorsionado el agrupamiento.</li>
+    <li>Las marcas pueden usar esta segmentación para <strong>diseñar estrategias diferenciadas</strong>: descuentos para productos del clúster económico, campañas de visibilidad para los de nicho y refuerzo de los productos estrella.</li>
+    <li>El método del codo confirma que <strong>K=4 es el punto de equilibrio</strong> entre complejidad del modelo e interpretabilidad de los resultados.</li>
+  </ol>
+</div>
+
+<div class="card">
+  <img class="chart-img" src="data:image/png;base64,{{ info.grafica_clusters }}" alt="Clústeres finales">
+</div>
+{% endif %}
+
+{% endif %}
+
+</main>
+
+<script>
+  // Keep slider value live
+  const slider = document.getElementById('k_range');
+  if (slider) {
+    slider.addEventListener('input', () => {
+      document.getElementById('kval').textContent = slider.value;
+    });
+  }
+</script>
 </body>
 </html>
