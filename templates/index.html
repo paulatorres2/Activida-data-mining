@@ -161,42 +161,40 @@
 <div class="card">
   <h2>¿Cuál es el problema?</h2>
   <p>
-    Plataformas como Amazon generan grandes volúmenes de transacciones con productos de distintos
-    precios, categorías, valoraciones y popularidad. Esta información, sin el procesamiento adecuado,
-    resulta poco útil para la toma de decisiones estratégicas. El problema radica en el
-    aprovechamiento nulo de los datos recolectados al no ser procesados por métodos de minería
-    de datos capaces de encontrar patrones ocultos de utilidad para estrategias de precios,
-    campañas de descuento y recomendaciones. Por ende: <em>¿es posible identificar grupos
-    naturales o segmentos de mercado que compartan características similares de precio,
-    descuento y popularidad?</em>
+    Plataformas de comercio electrónico como Amazon generan grandes volúmenes de transacciones con 
+    productos de distintos precios, categorías, valoraciones y popularidad. Esta información no tiene
+    gran aprovechamiento si no es procesada por métodos de minería de datos capaces de encontrar 
+    patrones ocultos utiles para formar estrategias de precios, campañas de descuento y recomendaciones. 
+    Por ende: <em>¿es posible identificar grupos naturales o segmentos de mercado que compartan 
+    características similares de precio, descuento y popularidad?</em>
   </p>
   <p>
     Este proyecto aplica el algoritmo <strong>K-Means</strong> para segmentar automáticamente
-    los productos del dataset de Amazon en grupos homogéneos, permitiendo identificar patrones
-    comerciales y apoyar decisiones de marketing a través de una aplicación web Flask.
+    los productos del dataset de Amazon en grupos que permitan identificar patrones comerciales 
+    y apoyar decisiones de marketing a través de una aplicación web desarrollada en Flask.
   </p>
 </div>
 
 <div class="card">
   <h2>Objetivos</h2>
   <ul>
-    <li>Preparar y limpiar el dataset de Amazon Sales para su análisis numérico.</li>
-    <li>Seleccionar las 5 variables numéricas más representativas del perfil comercial de cada producto.</li>
+    <li>Preparar y limpiar el dataset de Amazon Sales para su análisis.</li>
+    <li>Seleccionar las variables numéricas más representativas de cada producto.</li>
     <li>Justificar el número óptimo de clústeres mediante el método del codo.</li>
-    <li>Aplicar K-Means con K=4 y visualizar los segmentos resultantes.</li>
-    <li>Extraer conclusiones de negocio accionables a partir del agrupamiento.</li>
+    <li>Aplicar K-Means con y visualizar los segmentos resultantes.</li>
+    <li>Extraer conclusiones utiles de negocio a partir del agrupamiento.</li>
   </ul>
 </div>
 
 <div class="card">
   <h2>Metodología general</h2>
   <div class="steps">
-    <div class="step"><div><strong>Carga y limpieza de datos.</strong> Eliminación de símbolos monetarios, caracteres especiales y valores nulos.</div></div>
-    <div class="step"><div><strong>Selección de variables.</strong> Elección de las 5 variables numéricas más relevantes para el clustering.</div></div>
-    <div class="step"><div><strong>Normalización.</strong> Estandarización con StandardScaler para que todas las variables tengan igual peso.</div></div>
+    <div class="step"><div><strong>Carga y limpieza de datos.</strong> Eliminación de símbolos, caracteres especiales y valores nulos.</div></div>
+    <div class="step"><div><strong>Selección de variables.</strong> Elección de variables numéricas relevantes para realizar el clustering.</div></div>
+    <div class="step"><div><strong>Normalización.</strong> Estandarización con StandardScaler para que todas las variables tengan una escala similar.</div></div>
     <div class="step"><div><strong>Método del codo.</strong> Ejecución de K-Means para K de 1 a 10, evaluando la inercia para seleccionar el K óptimo.</div></div>
-    <div class="step"><div><strong>Aplicación de K-Means.</strong> Entrenamiento del modelo con K=4 y asignación de etiquetas a cada producto.</div></div>
-    <div class="step"><div><strong>Reducción dimensional.</strong> Proyección de los datos a 2D con PCA para su visualización.</div></div>
+    <div class="step"><div><strong>Aplicación de K-Means.</strong> Entrenamiento del modelo y asignación de los productos a los clústeres.</div></div>
+    <div class="step"><div><strong>Reducción dimensional.</strong> Proyección de los datos en dos dimensiones con PCA para una mejor visualización.</div></div>
     <div class="step"><div><strong>Interpretación.</strong> Análisis del perfil de cada clúster con base en los centroides y estadísticas.</div></div>
   </div>
 </div>
@@ -208,7 +206,7 @@
 <h1>Amazon Sales Dataset <span class="tag">Kaggle</span></h1>
 
 <div class="alert alert-info">
-  Fuente: <strong>Amazon Sales Dataset</strong> — Kaggle (KARKAVELRAJA J, 2023).
+  Fuente: <strong>Amazon Sales Dataset</strong> — Kaggle (KARKAVELRAJA J, https://www.kaggle.com/datasets/karkavelrajaj/amazon-sales-dataset).
   Contiene información real de productos vendidos en Amazon India con precios originales,
   precios con descuento, porcentaje de descuento, calificación promedio y número de reseñas.
   Los precios están en <strong>₹ (rupias indias)</strong>.
@@ -246,12 +244,12 @@
 
 <div class="card">
   <h2>Justificación de Variables Seleccionadas</h2>
-  <p>Se seleccionaron las <strong>5 variables numéricas</strong> que mejor capturan el perfil comercial de cada producto:</p>
+  <p>Se seleccionaron <strong>5 variables numéricas</strong> que mejor capturan el perfil comercial de cada producto:</p>
   <ul>
-    <li><strong>discounted_price:</strong> refleja el valor percibido por el comprador y define el segmento de precio al que pertenece el producto.</li>
-    <li><strong>actual_price:</strong> indica el precio de lista; junto con el precio descontado permite calcular el margen de reducción.</li>
-    <li><strong>discount_percentage:</strong> mide la agresividad de la estrategia de descuento, diferenciando productos en oferta fuerte de los de precio estable.</li>
-    <li><strong>rating:</strong> calidad percibida; separa productos bien valorados de los mediocres o inconsistentes.</li>
+    <li><strong>discounted_price:</strong> refleja el valor que ve el comprador y define el segmento de precio al que pertenece el producto.</li>
+    <li><strong>actual_price:</strong> indica el precio de lista o precio sin aplicación de descuentos.</li>
+    <li><strong>discount_percentage:</strong> muestra el porcentaje de descuento, diferenciando productos en oferta fuerte de los de precio estable.</li>
+    <li><strong>rating:</strong> calidad percibida segun usuarios; separa productos bien valorados de los mediocres o inconsistentes.</li>
     <li><strong>rating_count:</strong> popularidad y volumen de ventas implícito; productos con miles de reseñas son muy diferentes de los que tienen pocas.</li>
   </ul>
 </div>
@@ -259,14 +257,14 @@
 <div class="card">
   <h2>Proceso de Limpieza</h2>
   <ul>
-    <li>Eliminación del símbolo <code>₹</code> y comas en precios mediante expresiones regulares.</li>
+    <li>Eliminación del símbolo <code>₹</code> y comas en precios.</li>
     <li>Eliminación del símbolo <code>%</code> en descuentos y conversión a numérico.</li>
     <li>Eliminación de comas en <code>rating_count</code> y conversión a numérico.</li>
     <li>Parámetro <code>errors='coerce'</code> para convertir valores no parseables a <code>NaN</code> y eliminarlos.</li>
     <li>Descarte de filas con valores nulos en cualquiera de las 5 variables.</li>
     <li>Descarte de productos con precio o conteo de reseñas igual a cero.</li>
-    <li>Capado del percentil 99 de <code>rating_count</code> para reducir el efecto de la distribución sesgada a la derecha.</li>
-    <li>Normalización con <strong>StandardScaler</strong> y reducción a 2D con <strong>PCA</strong> (retiene 70–75% de la varianza) para visualización.</li>
+    <li>Capado del percentil 99 de <code>rating_count</code> para reducir efectos de anomalias.</li>
+    <li>Normalización con <strong>StandardScaler</strong> y reducción a dos dimensiones con <strong>PCA</strong> para visualización.</li>
   </ul>
 </div>
 
@@ -300,24 +298,24 @@
 
 {% elif seccion == 'conceptos' %}
 <!-- ─── CONCEPTOS K-MEANS ─── -->
-<div class="breadcrumb">Inicio / <span>Conceptos K-Means</span></div>
+<div class="breadcrumb">Inicio / <span>Conceptos Importantes Respecto a K-Means</span></div>
 <h1>Conceptos Principales de K-Means</h1>
 
 <div class="alert alert-info">
   K-Means es un algoritmo de aprendizaje <strong>no supervisado</strong> que agrupa datos en
-  <em>K</em> clústeres minimizando la varianza interna de cada grupo.
+  <em>K</em> clústeres y cuyo objetivo es minimizar la varianza interna de cada grupo.
 </div>
 
 <div class="concepts">
   <div class="concept-card">
     <div class="icon">🎯</div>
     <h3>Centroide</h3>
-    <p>Punto promedio que representa el centro geométrico de un clúster. Se recalcula en cada iteración como la media de todos los puntos asignados al grupo.</p>
+    <p>Punto promedio que representa el centro de un clúster. Se recalcula en cada iteración como la media de todos los puntos asignados al grupo.</p>
   </div>
   <div class="concept-card">
     <div class="icon">📏</div>
     <h3>Distancia Euclidiana</h3>
-    <p>Métrica usada para asignar cada punto al centroide más cercano: d(xᵢ, μₖ) = √Σⱼ(xᵢⱼ − μₖⱼ)². Las variables se normalizan antes para que todas contribuyan por igual.</p>
+    <p>Métrica usada para asignar cada punto al centroide más cercano: d(xᵢ, μₖ) = √Σⱼ(xᵢⱼ − μₖⱼ)².</p>
   </div>
   <div class="concept-card">
     <div class="icon">🔥</div>
@@ -327,7 +325,7 @@
   <div class="concept-card">
     <div class="icon">📈</div>
     <h3>Método del Codo</h3>
-    <p>Gráfica de inercia vs. K. El punto donde la curva forma un "codo" (inflexión) indica el K óptimo: agregar más clústeres aporta poco beneficio.</p>
+    <p>Gráfica de inercia vs. K. El punto donde la curva forma un "codo" (inflexión) indica el K óptimo, ya que agregar más clústeres aporta poco beneficio.</p>
   </div>
   <div class="concept-card">
     <div class="icon">🔄</div>
@@ -337,48 +335,48 @@
   <div class="concept-card">
     <div class="icon">⚖️</div>
     <h3>Normalización</h3>
-    <p>Antes de K-Means es esencial escalar los datos (StandardScaler). Sin esto, variables con mayor magnitud (p. ej. precios) dominarían la distancia.</p>
+    <p>Antes de K-Means es esencial escalar los datos (StandardScaler). Sin esto, variables con mayor magnitud dominarían la distancia.</p>
   </div>
   <div class="concept-card">
     <div class="icon">🌀</div>
     <h3>K-Means++</h3>
-    <p>Estrategia de inicialización que coloca los centroides con mayor separación inicial, reduciendo la probabilidad de converger a mínimos locales. Scikit-learn lo usa <strong>por defecto</strong> con <code>init='k-means++'</code>.</p>
+    <p>Estrategia de inicialización que coloca los centroides con mayor separación inicial, reduciendo la probabilidad de converger a mínimos locales. Scikit-learn lo usa por defecto con <code>init='k-means++'</code>.</p>
   </div>
   <div class="concept-card">
     <div class="icon">🔬</div>
-    <h3>PCA (Reducción)</h3>
-    <p>El Análisis de Componentes Principales proyecta los datos de 5D a 2D para visualización, preservando la mayor varianza posible.</p>
+    <h3>PCA (Reducción de dimensiones)</h3>
+    <p>El Análisis de Componentes Principales (PCA) proyecta los datos de 5 dimensiones a 2 dimensiones para visualizarlo en una gráfica, preservando la mayor varianza posible.</p>
   </div>
 </div>
 
 <div class="card" style="margin-top:24px">
   <h2>Algoritmo Paso a Paso</h2>
   <div class="steps">
-    <div class="step"><div>Elegir K centroides iniciales aleatorios (o con K-Means++).</div></div>
-    <div class="step"><div>Asignar cada punto al centroide más cercano (distancia euclidiana en espacio normalizado).</div></div>
-    <div class="step"><div>Recalcular cada centroide como el promedio de los puntos de su clúster.</div></div>
-    <div class="step"><div>Repetir pasos 2–3 hasta que las asignaciones converjan o se alcance el máximo de iteraciones.</div></div>
-    <div class="step"><div>Evaluar la calidad con la inercia total y las características de cada clúster.</div></div>
+    <div class="step"><div>Se eligen K centroides iniciales aleatorios (o con K-Means++).</div></div>
+    <div class="step"><div>Se asigna cada dato al centroide más cercano (con distancia euclidiana).</div></div>
+    <div class="step"><div>Se recalcula cada centroide como el promedio de los puntos de su clúster.</div></div>
+    <div class="step"><div>Se repiten los pasos 2 y3 hasta que las asignaciones converjan o se alcance el máximo de iteraciones.</div></div>
+    <div class="step"><div>Se evalúa la calidad con la inercia total y las características de cada clúster.</div></div>
   </div>
 </div>
 
 <div class="card">
-  <h2>Ventajas y Limitaciones</h2>
+  <h2>Ventajas y Desventajas</h2>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
     <div>
-      <h3 style="color:var(--c2)">✅ Ventajas</h3>
+      <h3 style="color:var(--c2)">Ventajas</h3>
       <ul>
-        <li>Eficiente con grandes volúmenes de datos.</li>
-        <li>Fácil de implementar e interpretar.</li>
-        <li>Escalable con variantes como Mini-Batch K-Means.</li>
+        <li>Este algoritmo es eficiente con grandes volúmenes de datos.</li>
+        <li>Es consderablemente fácil de implementar e interpretar.</li>
+        <li>Es escalable.</li>
         <li>Resultados reproducibles con <code>random_state</code>.</li>
       </ul>
     </div>
     <div>
-      <h3 style="color:var(--c0)">⚠️ Limitaciones</h3>
+      <h3 style="color:var(--c0)">Desventajas</h3>
       <ul>
-        <li>Requiere definir K a priori.</li>
-        <li>Sensible a outliers y escala de variables.</li>
+        <li>Requiere que se defina K a priori.</li>
+        <li>Es sensible a los outliers y a la escala de las variables.</li>
         <li>Asume clústeres esféricos y de tamaño similar.</li>
         <li>Puede converger a mínimos locales.</li>
       </ul>

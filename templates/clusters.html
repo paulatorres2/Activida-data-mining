@@ -4,17 +4,17 @@
 {% block content %}
 <div class="page-header">
   <h1>Visualización de Clústeres</h1>
-  <p>Proyección PCA 2D de los {{ result.total_registros }} productos agrupados en {{ result.n_clusters }} clústeres.</p>
+  <p>Gráfica PCA 2D de los {{ result.total_registros }} productos agrupados en {{ result.n_clusters }} clústeres.</p>
 </div>
 
 <div class="card">
-  <h2>Gráfica de dispersión — PCA 2D</h2>
+  <h2>Gráfica de dispersión</h2>
   <p>
     K-Means se entrena sobre las <strong>5 dimensiones</strong> originales para garantizar
     la máxima precisión. Para la visualización, se aplica <strong>PCA</strong> que reduce
     las 5 dimensiones a 2, reteniendo aproximadamente el
     <strong>{{ result.varianza_pca[0] + result.varianza_pca[1] }}%</strong>
-    de la varianza total — suficiente para apreciar la separación entre grupos.
+    de la varianza total lo que es suficiente para apreciar la separación entre grupos.
     Cada punto representa un producto; su color indica el clúster asignado
     y las marcas <strong>×</strong> negras corresponden a los centroides.
     La posición diferenciada de los centroides en el espacio confirma que K-Means
