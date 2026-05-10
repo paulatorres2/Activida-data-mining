@@ -4,7 +4,7 @@
 {% block content %}
 <div class="page-header">
   <h1>Centroides de los Clústeres</h1>
-  <p>El centroide es el vector promedio de cada grupo y representa el "producto típico" del segmento. Es la base para interpretar qué caracteriza a cada clúster.</p>
+  <p>El centroide es el punto promedio en cada grupo y representa el "producto típico" del segmento. Es la base para interpretar las caracteristicas de cada clúster.</p>
 </div>
 
 <div class="card">
@@ -38,7 +38,7 @@
   <h2>Perfil comparativo normalizado</h2>
   <p>
     Los valores están normalizados en [0–1] para comparar variables de distinta escala.
-    Un valor de 1 indica el clúster con el valor más alto en esa variable.
+    El valor 1 indica el clúster con el valor más alto en esa variable.
   </p>
   <img class="chart-img" src="data:image/png;base64,{{ charts.centroids }}" alt="Gráfica de centroides" />
 </div>

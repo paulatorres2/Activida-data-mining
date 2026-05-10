@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
-{% block title %}Método del Codo — K-Means{% endblock %}
+{% block title %}Método del Codo en K-Means{% endblock %}
 
 {% block content %}
 <div class="page-header">
   <h1>Método del Codo</h1>
-  <p>Selección del número óptimo de clústeres mediante la gráfica de inercia.</p>
+  <p>Permite la selección del número óptimo de clústeres mediante la gráfica de inercia en relacion con el número de clústeres.</p>
 </div>
 
 <div class="card">
@@ -12,8 +12,8 @@
   <p>
     K-Means requiere definir K antes de ejecutarse. El método del codo evalúa la
     <strong>inercia</strong> (suma de cuadrados intra-clúster) para K de 1 a 10.
-    A medida que K aumenta, la inercia decrece; el punto donde la reducción se vuelve
-    marginal — formando visualmente el "codo" de un brazo — indica el K óptimo.
+    A medida que K aumenta, la inercia disminuye; el punto donde la reducción se 
+    deja de cambiar de manera pronunciada, formando un "codo", indica el K óptimo.
   </p>
 </div>
 
@@ -44,16 +44,17 @@
 <div class="card">
   <h2>Justificación de K = {{ k_optimo }}</h2>
   <p>
-    La inercia presenta una caída pronunciada de K=1 a K={{ k_optimo }}; a partir de
-    K={{ k_optimo + 1 }} las mejoras son marginales y no justifican la complejidad adicional.
+    La inercia presenta una caída pronunciada de K=1 a K={{ k_optimo }}. A partir de
+    K={{ k_optimo + 1 }} las mejoras no son significativas y no justifican la complejidad 
+    adicional del aumento.
     El punto <strong>K = {{ k_optimo }}</strong> es donde la curva cambia de pendiente
     pronunciada a suave, formando el "codo" característico.
   </p>
   <p>
-    Desde la perspectiva de negocio, los {{ k_optimo }} segmentos resultantes son coherentes
+    Desde una perspectiva empresarial, los {{ k_optimo }} segmentos resultantes son afines
     con la intuición comercial de Amazon: productos de bajo precio con alto descuento, productos
     premium de nicho, productos estrella de alta popularidad y productos de rango medio. Son
-    suficientemente granulares para ser accionables e interpretables.
+    suficientemente claros para ser interpretables.
   </p>
 </div>
 {% endblock %}

@@ -10,46 +10,41 @@
 <div class="card">
   <h2>Planteamiento del problema</h2>
   <p>
-    Plataformas de comercio electrónico como Amazon generan una gran cantidad de transacciones con
-    una variedad significativa de productos que oscilan entre diferentes precios, categorías,
-    valoraciones de clientes y popularidad. Esta información se acumula en bases de datos masivas
-    que, sin el procesamiento adecuado, resultan poco útiles para la toma de decisiones estratégicas.
+    Plataformas de comercio electrónico como Amazon generan grandes volúmenes de transacciones con 
+    productos de distintos precios, categorías, valoraciones y popularidad. Esta información no tiene
+    gran aprovechamiento si no es procesada por métodos de minería de datos capaces de encontrar 
+    patrones ocultos utiles para formar estrategias de precios, campañas de descuento y recomendaciones. 
+    Por ende: <em>¿es posible identificar grupos naturales o segmentos de mercado que compartan 
+    características similares de precio, descuento y popularidad?</em>
   </p>
   <p>
-    El problema radica en que los datos recolectados no son aprovechados mediante métodos de
-    minería de datos que permitan encontrar información oculta de utilidad para estrategias de
-    precios, campañas de descuentos y recomendaciones personalizadas. Por ende: <em>¿es posible
-    identificar grupos naturales o segmentos de mercado que compartan características similares
-    de precio, descuento y popularidad?</em>
-  </p>
-  <p>
-    Este proyecto aplica <strong>K-Means</strong> para segmentar automáticamente los productos
-    del dataset de Amazon en grupos homogéneos, permitiendo identificar patrones comerciales y
-    apoyar decisiones de marketing.
+    Este proyecto aplica el algoritmo <strong>K-Means</strong> para segmentar automáticamente
+    los productos del dataset de Amazon en grupos que permitan identificar patrones comerciales 
+    y apoyar decisiones de marketing a través de una aplicación web desarrollada en Flask.
   </p>
 </div>
 
 <div class="card">
   <h2>Objetivos</h2>
   <ul>
-    <li>Preparar y limpiar el dataset de Amazon Sales para análisis numérico.</li>
-    <li>Seleccionar las variables más representativas del perfil comercial de cada producto.</li>
-    <li>Justificar el número de clústeres con el método del codo.</li>
-    <li>Visualizar e interpretar los segmentos resultantes.</li>
-    <li>Extraer conclusiones de negocio accionables a partir del agrupamiento.</li>
+    <li>Preparar y limpiar el dataset de Amazon Sales para su análisis.</li>
+    <li>Seleccionar las variables numéricas más representativas de cada producto.</li>
+    <li>Justificar el número óptimo de clústeres mediante el método del codo.</li>
+    <li>Aplicar K-Means con y visualizar los segmentos resultantes.</li>
+    <li>Extraer conclusiones utiles de negocio a partir del agrupamiento.</li>
   </ul>
 </div>
 
 <div class="card">
   <h2>Metodología</h2>
   <div class="steps">
-    <div class="step"><p><strong>Carga y limpieza.</strong> Eliminación de símbolos monetarios, caracteres especiales y valores nulos del CSV original.</p></div>
-    <div class="step"><p><strong>Selección de variables.</strong> Elección de las 5 variables numéricas que mejor capturan el perfil comercial.</p></div>
-    <div class="step"><p><strong>Normalización.</strong> Estandarización con StandardScaler para que todas las variables tengan igual peso en la distancia euclidiana.</p></div>
-    <div class="step"><p><strong>Método del codo.</strong> Ejecución de K-Means para K de 1 a 10, evaluando la inercia para seleccionar el K óptimo.</p></div>
-    <div class="step"><p><strong>K-Means con K=4.</strong> Entrenamiento del modelo final y asignación de etiquetas a cada producto.</p></div>
-    <div class="step"><p><strong>Reducción PCA.</strong> Proyección a 2D para visualización de los clústeres en gráfica de dispersión.</p></div>
-    <div class="step"><p><strong>Interpretación.</strong> Análisis del perfil de cada clúster a partir de los centroides y estadísticas descriptivas.</p></div>
+    <div class="step"><div><strong>Carga y limpieza de datos.</strong> Eliminación de símbolos, caracteres especiales y valores nulos.</div></div>
+    <div class="step"><div><strong>Selección de variables.</strong> Elección de variables numéricas relevantes para realizar el clustering.</div></div>
+    <div class="step"><div><strong>Normalización.</strong> Estandarización con StandardScaler para que todas las variables tengan una escala similar.</div></div>
+    <div class="step"><div><strong>Método del codo.</strong> Ejecución de K-Means para K de 1 a 10, evaluando la inercia para seleccionar el K óptimo.</div></div>
+    <div class="step"><div><strong>Aplicación de K-Means.</strong> Entrenamiento del modelo y asignación de los productos a los clústeres.</div></div>
+    <div class="step"><div><strong>Reducción dimensional.</strong> Proyección de los datos en dos dimensiones con PCA para una mejor visualización.</div></div>
+    <div class="step"><div><strong>Interpretación.</strong> Análisis del perfil de cada clúster con base en los centroides y estadísticas.</div></div>
   </div>
 </div>
 {% endblock %}
