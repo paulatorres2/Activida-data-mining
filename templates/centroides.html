@@ -4,7 +4,7 @@
 {% block content %}
 <div class="page-header">
   <h1>Centroides de los Clústeres</h1>
-  <p>El centroide es el vector promedio de cada grupo y representa el "producto típico" del segmento.</p>
+  <p>El centroide es el vector promedio de cada grupo y representa el "producto típico" del segmento. Es la base para interpretar qué caracteriza a cada clúster.</p>
 </div>
 
 <div class="card">
@@ -21,7 +21,7 @@
       <tbody>
         {% for c, vals in enumerate(result.centroids_rows) %}
         <tr>
-          <td class="cluster-{{ c }}">Clúster {{ c }}</td>
+          <td class="cluster-{{ c }}">Clúster {{ c + 1 }}</td>
           <td>₹ {{ vals.discounted_price | round(0) | int }}</td>
           <td>₹ {{ vals.actual_price | round(0) | int }}</td>
           <td>{{ vals.discount_percentage | round(1) }}%</td>

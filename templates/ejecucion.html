@@ -18,8 +18,10 @@
     </button>
   </form>
   <p class="text-muted" style="margin-top: 12px; font-size: 0.85rem;">
-    El valor recomendado es <strong>K = 4</strong> según el método del codo.
-    <a href="/codo">Ver justificación</a>.
+    El valor recomendado es <strong>K = 4</strong> según el método del codo
+    (<a href="/codo">ver justificación</a>). El modelo ejecuta <strong>10 inicializaciones
+    aleatorias</strong> (con K-Means++) para evitar mínimos locales, y los resultados se
+    almacenan en caché para una respuesta instantánea en peticiones repetidas.
   </p>
 </div>
 
@@ -37,7 +39,7 @@
   {% for c, datos in result.summary.items() %}
   <div class="stat-card">
     <div class="stat-card__value cluster-{{ c }}">{{ datos.count }}</div>
-    <div class="stat-card__label">Clúster {{ c }}</div>
+    <div class="stat-card__label">Clúster {{ c + 1 }}</div>
   </div>
   {% endfor %}
 </div>
@@ -58,7 +60,7 @@
       <tbody>
         {% for c, datos in result.summary.items() %}
         <tr>
-          <td class="cluster-{{ c }}">Clúster {{ c }}</td>
+          <td class="cluster-{{ c }}">Clúster {{ c + 1 }}</td>
           <td>{{ datos.count }}</td>
           <td>₹ {{ datos.precio_promedio | int }}</td>
           <td>{{ datos.descuento_promedio }}%</td>
@@ -83,18 +85,51 @@
         </tr>
       </thead>
       <tbody>
-        {% for i, row in enumerate(result.tabla) %}
-        <tr>
-          <td>{{ i + 1 }}</td>
-          <td>{{ row['Producto'] }}</td>
-          <td>{{ row['Precio Dto. (₹)'] }}</td>
-          <td>{{ row['Precio Real (₹)'] }}</td>
-          <td>{{ row['Descuento (%)'] }}</td>
-          <td>{{ row['Rating'] }}</td>
-          <td>{{ row['N° Reseñas'] }}</td>
-          <td class="cluster-{{ row['Clúster'] }}">{{ row['Clúster'] }}</td>
-        </tr>
-        {% endfor %}
+        {% set total = result.tabla | length %}
+        {% if total <= 60 %}
+          {% for i, row in enumerate(result.tabla) %}
+          <tr>
+            <td>{{ i + 1 }}</td>
+            <td>{{ row['Producto'] }}</td>
+            <td>{{ row['Precio Dto. (₹)'] }}</td>
+            <td>{{ row['Precio Real (₹)'] }}</td>
+            <td>{{ row['Descuento (%)'] }}</td>
+            <td>{{ row['Rating'] }}</td>
+            <td>{{ row['N° Reseñas'] }}</td>
+            <td class="cluster-{{ row['Clúster'] }}">{{ row['Clúster'] + 1 }}</td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          {% for i, row in enumerate(result.tabla[:30]) %}
+          <tr>
+            <td>{{ i + 1 }}</td>
+            <td>{{ row['Producto'] }}</td>
+            <td>{{ row['Precio Dto. (₹)'] }}</td>
+            <td>{{ row['Precio Real (₹)'] }}</td>
+            <td>{{ row['Descuento (%)'] }}</td>
+            <td>{{ row['Rating'] }}</td>
+            <td>{{ row['N° Reseñas'] }}</td>
+            <td class="cluster-{{ row['Clúster'] }}">{{ row['Clúster'] + 1 }}</td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td colspan="8" style="text-align:center; padding: 10px 0; color: var(--text-muted); font-style: italic; font-size: 0.85rem;">
+              — {{ total - 60 }} productos ocultos —
+            </td>
+          </tr>
+          {% for i, row in enumerate(result.tabla[-30:]) %}
+          <tr>
+            <td>{{ total - 30 + i + 1 }}</td>
+            <td>{{ row['Producto'] }}</td>
+            <td>{{ row['Precio Dto. (₹)'] }}</td>
+            <td>{{ row['Precio Real (₹)'] }}</td>
+            <td>{{ row['Descuento (%)'] }}</td>
+            <td>{{ row['Rating'] }}</td>
+            <td>{{ row['N° Reseñas'] }}</td>
+            <td class="cluster-{{ row['Clúster'] }}">{{ row['Clúster'] + 1 }}</td>
+          </tr>
+          {% endfor %}
+        {% endif %}
       </tbody>
     </table>
   </div>
