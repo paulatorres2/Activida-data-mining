@@ -6,7 +6,7 @@
   <title>{% block title %}K-Means — Amazon{% endblock %}</title>
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-        integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plh7eecyn6CafxmKoweBQ0L0n5c2w=="
+        integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
 </head>
@@ -20,14 +20,14 @@
 
   <div class="sidebar__nav">
     {% set links = [
-      ('descripcion', 'fa-file-lines',   'Descripción'),
-      ('dataset',     'fa-table',        'Dataset'),
-      ('conceptos',   'fa-brain',        'Conceptos K-Means'),
-      ('ejecucion',   'fa-gears',        'Ejecución'),
-      ('clusters',    'fa-circle-dot',   'Clústeres'),
-      ('centroides',  'fa-crosshairs',   'Centroides'),
-      ('codo',        'fa-chart-line',   'Método del Codo'),
-      ('interpretacion', 'fa-lightbulb', 'Interpretación'),
+      ('pages.descripcion',      'fa-file-lines',   'Descripción'),
+      ('analysis.dataset',       'fa-table',        'Dataset'),
+      ('pages.conceptos',        'fa-brain',        'Conceptos K-Means'),
+      ('analysis.ejecucion',     'fa-gears',        'Ejecución'),
+      ('analysis.clusters',      'fa-circle-dot',   'Clústeres'),
+      ('analysis.centroides',    'fa-crosshairs',   'Centroides'),
+      ('analysis.codo',          'fa-chart-line',   'Método del Codo'),
+      ('analysis.interpretacion','fa-lightbulb',    'Interpretación'),
     ] %}
     {% for endpoint, icon, label in links %}
     <a href="{{ url_for(endpoint) }}"

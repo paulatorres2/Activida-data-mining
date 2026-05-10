@@ -44,11 +44,16 @@
 <div class="card">
   <h2>Justificación de K = {{ k_optimo }}</h2>
   <p>
-    La inercia cae de forma pronunciada de K=1 a K={{ k_optimo }}. A partir de
-    K={{ k_optimo + 1 }} la reducción por cada clúster adicional se vuelve marginal,
-    lo que indica que el beneficio de añadir más grupos no justifica la mayor complejidad
-    del modelo. Desde la perspectiva de negocio, {{ k_optimo }} segmentos son suficientemente
-    granulares para capturar perfiles de producto distintos y fáciles de interpretar.
+    La inercia presenta una caída pronunciada de K=1 a K={{ k_optimo }}; a partir de
+    K={{ k_optimo + 1 }} las mejoras son marginales y no justifican la complejidad adicional.
+    El punto <strong>K = {{ k_optimo }}</strong> es donde la curva cambia de pendiente
+    pronunciada a suave, formando el "codo" característico.
+  </p>
+  <p>
+    Desde la perspectiva de negocio, los {{ k_optimo }} segmentos resultantes son coherentes
+    con la intuición comercial de Amazon: productos de bajo precio con alto descuento, productos
+    premium de nicho, productos estrella de alta popularidad y productos de rango medio. Son
+    suficientemente granulares para ser accionables e interpretables.
   </p>
 </div>
 {% endblock %}

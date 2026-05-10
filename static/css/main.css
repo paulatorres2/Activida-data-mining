@@ -33,7 +33,7 @@ body {
 /* ── Sidebar ── */
 .sidebar {
   width: var(--nav-width);
-  min-height: 100vh;
+  height: 100vh;
   background: var(--color-nav-bg);
   display: flex;
   flex-direction: column;
@@ -243,6 +243,12 @@ body {
 .table td.cluster-1 { color: var(--color-primary); font-weight: 700; }
 .table td.cluster-2 { color: var(--color-success); font-weight: 700; }
 .table td.cluster-3 { color: #b5860d;              font-weight: 700; }
+.table td.cluster-4 { color: #9B5DE5;              font-weight: 700; }
+.table td.cluster-5 { color: #F15BB5;              font-weight: 700; }
+.table td.cluster-6 { color: #264653;              font-weight: 700; }
+.table td.cluster-7 { color: #00BBF9;              font-weight: 700; }
+.table td.cluster-8 { color: #06D6A0;              font-weight: 700; }
+.table td.cluster-9 { color: #F4A261;              font-weight: 700; }
 
 /* ── Charts ── */
 .chart-img {
@@ -415,6 +421,12 @@ body {
 .cluster-card--1 { background: var(--color-primary); }
 .cluster-card--2 { background: var(--color-success); }
 .cluster-card--3 { background: #c19a0e; }
+.cluster-card--4 { background: #9B5DE5; }
+.cluster-card--5 { background: #F15BB5; }
+.cluster-card--6 { background: #264653; }
+.cluster-card--7 { background: #00BBF9; }
+.cluster-card--8 { background: #06D6A0; }
+.cluster-card--9 { background: #F4A261; }
 
 /* ── Variable info rows ── */
 .var-table td:first-child {
@@ -438,6 +450,12 @@ body {
 .badge--1 { background: var(--color-primary); }
 .badge--2 { background: var(--color-success); }
 .badge--3 { background: #c19a0e; }
+.badge--4 { background: #9B5DE5; }
+.badge--5 { background: #F15BB5; }
+.badge--6 { background: #264653; }
+.badge--7 { background: #00BBF9; }
+.badge--8 { background: #06D6A0; }
+.badge--9 { background: #F4A261; }
 
 /* ── Elbow inertia table highlight ── */
 .table tr.is-optimal {

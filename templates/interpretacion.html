@@ -11,7 +11,7 @@
   {% for c in range(result.n_clusters) %}
   {% set entry = cluster_descs[c] %}
   <div class="cluster-card cluster-card--{{ c }}">
-    <h3>Clúster {{ c }} — {{ entry[0] }}</h3>
+    <h3>Clúster {{ c + 1 }} — {{ entry[0] }}</h3>
     <p>{{ entry[1] }}</p>
     <div class="cluster-card__meta">
       <span><i class="fa-solid fa-box"></i> {{ result.summary[c].count }} productos</span>
@@ -30,10 +30,11 @@
 <div class="card">
   <h2>Patrones identificados</h2>
   <ul>
-    <li><strong>Segmentación por precio clara:</strong> K-Means separó naturalmente los productos en rangos de precio, lo que indica que el precio es el factor más discriminante del dataset.</li>
-    <li><strong>Relación precio–popularidad no lineal:</strong> Los productos más económicos no son necesariamente los más populares; la popularidad forma su propio eje de diferenciación.</li>
-    <li><strong>Descuentos agresivos en productos baratos:</strong> El clúster de menor precio presenta los descuentos más altos, lo que sugiere una estrategia de penetración de mercado.</li>
-    <li><strong>Rating consistente entre segmentos:</strong> El rating varía poco entre clústeres (todos cercanos a 4.0), lo que indica que Amazon filtra productos de muy baja calidad del catálogo.</li>
+    <li><strong>No existe una segmentación por precio lineal:</strong> productos con precios similares pertenecen a clústeres distintos. Es la <em>combinación</em> de precio, descuento y popularidad la que impulsa la segmentación.</li>
+    <li><strong>La popularidad (rating_count) es el discriminador principal:</strong> el número total de calificaciones es el factor más tomado en cuenta por el modelo, evidenciado por el clúster con el mayor volumen de reseñas como característica más relevante. Esto sugiere que la visibilidad y el consumo son los principales impulsores de ventas.</li>
+    <li><strong>Descuentos inversamente proporcionales al precio:</strong> los descuentos más altos provienen de los productos más económicos, mientras que los más costosos presentan descuentos menores. Esto destaca estrategias de venta fundamentalmente distintas según el segmento.</li>
+    <li><strong>El volumen de ventas se concentra en productos baratos:</strong> el clúster de menor precio contiene la mayor cantidad de registros, lo que infiere que el público se interesa más por productos económicos.</li>
+    <li><strong>Rating consistente entre segmentos:</strong> las calificaciones oscilan en un rango muy similar (3.9–4.3), indicando que Amazon filtra naturalmente los productos mal valorados o que los compradores perciben calidad aceptable en todos los segmentos de precio.</li>
   </ul>
 </div>
 
@@ -41,19 +42,21 @@
   <h2>Selección del número de clústeres</h2>
   <p>
     Se eligió <strong>K = {{ result.n_clusters }}</strong> mediante el método del codo:
-    la inercia decrece significativamente de K=1 a K={{ result.n_clusters }}, y a partir
-    de ahí la reducción se vuelve marginal. Desde la perspectiva de negocio, este número
-    de segmentos es interpretable y accionable.
+    la inercia cae de forma pronunciada de K=1 a K={{ result.n_clusters }}, y a partir
+    de K={{ result.n_clusters + 1 }} la reducción se vuelve marginal. Los {{ result.n_clusters }}
+    segmentos son coherentes con la intuición de negocio de un comercio electrónico y son
+    suficientemente granulares para ser accionables.
   </p>
 </div>
 
 <div class="card">
   <h2>Conclusiones</h2>
   <ol>
-    <li>El algoritmo identificó <strong>{{ result.n_clusters }} segmentos</strong> con perfiles comerciales diferenciados en el catálogo de Amazon India.</li>
-    <li>Las variables de <strong>precio y popularidad</strong> son las más determinantes para la separación de los grupos.</li>
-    <li>La <strong>normalización previa</strong> fue indispensable: sin ella, el precio habría dominado la distancia euclidiana y distorsionado el agrupamiento.</li>
-    <li>Las marcas pueden usar esta segmentación para <strong>diseñar estrategias diferenciadas</strong>: descuentos para el segmento económico, campañas de visibilidad para el de nicho y refuerzo de los productos estrella.</li>
+    <li>El algoritmo K-Means identificó <strong>{{ result.n_clusters }} segmentos</strong> con perfiles comerciales diferenciados en el catálogo de Amazon India, sin requerir etiquetas previas.</li>
+    <li>El <strong>número total de calificaciones (rating_count)</strong> es el factor más diferenciador, con implicaciones importantes para las estrategias de marketing y visibilidad.</li>
+    <li>La <strong>normalización previa</strong> fue indispensable: sin ella, los precios (en miles de rupias) habrían dominado la distancia euclidiana y distorsionado el agrupamiento.</li>
+    <li>La <strong>gráfica PCA 2D</strong> confirma que los clústeres están razonablemente separados en el espacio reducido, y los centroides se ubican en regiones diferenciadas, validando que K-Means encontró grupos genuinamente distintos.</li>
+    <li>Las marcas pueden usar esta segmentación para <strong>diseñar estrategias diferenciadas</strong>: descuentos para el segmento económico, campañas de visibilidad para el nicho y refuerzo de los productos estrella.</li>
     <li>El método del codo confirma que <strong>K={{ result.n_clusters }} es el punto de equilibrio</strong> entre complejidad del modelo e interpretabilidad de los resultados.</li>
   </ol>
 </div>

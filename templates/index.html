@@ -161,27 +161,29 @@
 <div class="card">
   <h2>¿Cuál es el problema?</h2>
   <p>
-    Amazon cuenta con miles de productos de distintas categorías. Cada producto tiene un precio,
-    un descuento, una calificación y una popularidad diferente. Sin una clasificación inteligente,
-    es difícil identificar patrones de comportamiento entre los productos: ¿cuáles son los más
-    económicos y populares? ¿cuáles son caros con alto descuento? ¿cuáles tienen buena
-    calificación pero poco volumen de ventas?
+    Plataformas como Amazon generan grandes volúmenes de transacciones con productos de distintos
+    precios, categorías, valoraciones y popularidad. Esta información, sin el procesamiento adecuado,
+    resulta poco útil para la toma de decisiones estratégicas. El problema radica en el
+    aprovechamiento nulo de los datos recolectados al no ser procesados por métodos de minería
+    de datos capaces de encontrar patrones ocultos de utilidad para estrategias de precios,
+    campañas de descuento y recomendaciones. Por ende: <em>¿es posible identificar grupos
+    naturales o segmentos de mercado que compartan características similares de precio,
+    descuento y popularidad?</em>
   </p>
   <p>
-    Este proyecto aplica el algoritmo de agrupamiento <strong>K-Means</strong> para segmentar
-    automáticamente los productos del dataset de Amazon en grupos homogéneos, permitiendo
-    identificar patrones comerciales, apoyar decisiones de marketing y comprender el
-    comportamiento del catálogo de productos.
+    Este proyecto aplica el algoritmo <strong>K-Means</strong> para segmentar automáticamente
+    los productos del dataset de Amazon en grupos homogéneos, permitiendo identificar patrones
+    comerciales y apoyar decisiones de marketing a través de una aplicación web Flask.
   </p>
 </div>
 
 <div class="card">
   <h2>Objetivos</h2>
   <ul>
-    <li>Preparar y limpiar el dataset de Amazon Sales para su análisis.</li>
-    <li>Seleccionar variables relevantes para el proceso de clustering.</li>
-    <li>Aplicar K-Means con un valor de K justificado mediante el método del codo.</li>
-    <li>Visualizar e interpretar los clústeres resultantes.</li>
+    <li>Preparar y limpiar el dataset de Amazon Sales para su análisis numérico.</li>
+    <li>Seleccionar las 5 variables numéricas más representativas del perfil comercial de cada producto.</li>
+    <li>Justificar el número óptimo de clústeres mediante el método del codo.</li>
+    <li>Aplicar K-Means con K=4 y visualizar los segmentos resultantes.</li>
     <li>Extraer conclusiones de negocio accionables a partir del agrupamiento.</li>
   </ul>
 </div>
@@ -206,9 +208,10 @@
 <h1>Amazon Sales Dataset <span class="tag">Kaggle</span></h1>
 
 <div class="alert alert-info">
-  Fuente: <strong>Amazon Sales Dataset</strong> — Kaggle (karkavelrajaj).
-  El dataset contiene información de productos vendidos en Amazon India con sus precios,
-  descuentos, calificaciones y reseñas de usuarios.
+  Fuente: <strong>Amazon Sales Dataset</strong> — Kaggle (KARKAVELRAJA J, 2023).
+  Contiene información real de productos vendidos en Amazon India con precios originales,
+  precios con descuento, porcentaje de descuento, calificación promedio y número de reseñas.
+  Los precios están en <strong>₹ (rupias indias)</strong>.
 </div>
 
 {% if info %}
@@ -256,12 +259,14 @@
 <div class="card">
   <h2>Proceso de Limpieza</h2>
   <ul>
-    <li>Eliminación del símbolo <code>₹</code> y comas en precios numéricos.</li>
-    <li>Eliminación del símbolo <code>%</code> en descuentos y conversión a float.</li>
+    <li>Eliminación del símbolo <code>₹</code> y comas en precios mediante expresiones regulares.</li>
+    <li>Eliminación del símbolo <code>%</code> en descuentos y conversión a numérico.</li>
     <li>Eliminación de comas en <code>rating_count</code> y conversión a numérico.</li>
+    <li>Parámetro <code>errors='coerce'</code> para convertir valores no parseables a <code>NaN</code> y eliminarlos.</li>
     <li>Descarte de filas con valores nulos en cualquiera de las 5 variables.</li>
     <li>Descarte de productos con precio o conteo de reseñas igual a cero.</li>
-    <li>Capado del percentil 99 de <code>rating_count</code> para reducir el efecto de valores extremos.</li>
+    <li>Capado del percentil 99 de <code>rating_count</code> para reducir el efecto de la distribución sesgada a la derecha.</li>
+    <li>Normalización con <strong>StandardScaler</strong> y reducción a 2D con <strong>PCA</strong> (retiene 70–75% de la varianza) para visualización.</li>
   </ul>
 </div>
 
@@ -312,7 +317,7 @@
   <div class="concept-card">
     <div class="icon">📏</div>
     <h3>Distancia Euclidiana</h3>
-    <p>Métrica usada para asignar cada punto al centroide más cercano. Para vectores en ℝⁿ: d = √Σ(xᵢ − μᵢ)²</p>
+    <p>Métrica usada para asignar cada punto al centroide más cercano: d(xᵢ, μₖ) = √Σⱼ(xᵢⱼ − μₖⱼ)². Las variables se normalizan antes para que todas contribuyan por igual.</p>
   </div>
   <div class="concept-card">
     <div class="icon">🔥</div>
@@ -337,7 +342,7 @@
   <div class="concept-card">
     <div class="icon">🌀</div>
     <h3>K-Means++</h3>
-    <p>Estrategia de inicialización inteligente que dispersa los centroides iniciales, reduciendo el riesgo de converger a un mínimo local. Se activa con <code>init='k-means++'</code>.</p>
+    <p>Estrategia de inicialización que coloca los centroides con mayor separación inicial, reduciendo la probabilidad de converger a mínimos locales. Scikit-learn lo usa <strong>por defecto</strong> con <code>init='k-means++'</code>.</p>
   </div>
   <div class="concept-card">
     <div class="icon">🔬</div>
@@ -592,12 +597,12 @@
 <div class="card">
   <h2>Justificación de K = {{ info.n_clusters }}</h2>
   <p>
-    Observando la gráfica, la inercia cae abruptamente de K=1 a K=4, mientras que para K≥5
-    la reducción se vuelve progresivamente menor. El punto <strong>K = 4</strong> corresponde
-    al "codo" donde la curva cambia de pendiente pronunciada a suave, indicando que añadir
-    más clústeres no aporta una mejora significativa en la compacidad interna. Además, desde
-    la perspectiva de negocio, 4 segmentos son suficientemente granulares para capturar
-    distintos perfiles de producto y fácilmente interpretables.
+    La inercia presenta una caída pronunciada de K=1 a K=4. A partir de K=5 las mejoras son
+    marginales y no justifican la complejidad adicional del modelo. El punto <strong>K = 4</strong>
+    es el "codo" donde la curva cambia de pendiente pronunciada a suave. Los cuatro segmentos
+    resultantes — productos de bajo precio con alto descuento, productos premium de nicho,
+    productos estrella de alta popularidad y productos de rango medio — son coherentes con
+    la intuición comercial de Amazon y fácilmente interpretables.
   </p>
 </div>
 {% endif %}
@@ -628,29 +633,33 @@
 <div class="card" style="margin-top:24px">
   <h2>Patrones identificados</h2>
   <ul>
-    <li><strong>Segmentación por precio clara:</strong> K-Means separó naturalmente los productos en rangos de precio, sugiriendo que el precio es el factor más discriminante del dataset.</li>
-    <li><strong>Relación precio-popularidad:</strong> Los productos más económicos no son necesariamente los más populares; la popularidad (rating_count) forma su propio eje de diferenciación.</li>
-    <li><strong>Descuentos agresivos en productos baratos:</strong> El clúster de menor precio también presenta los descuentos más altos, lo que indica una estrategia de penetración de mercado.</li>
-    <li><strong>Calidad percibida consistente:</strong> El rating varía poco entre clústeres (todos cercanos a 4.0), sugiriendo que Amazon filtra productos de muy baja calidad.</li>
+    <li><strong>No existe una segmentación por precio lineal:</strong> la combinación de precio, descuento y popularidad es la que impulsa la segmentación, no el precio aislado.</li>
+    <li><strong>La popularidad (rating_count) es el discriminador principal:</strong> el número total de calificaciones es el factor más tomado en cuenta por el modelo. La visibilidad y el consumo son los principales impulsores de ventas.</li>
+    <li><strong>Descuentos inversamente proporcionales al precio:</strong> los más altos provienen de los productos más económicos; los más bajos, de los más costosos. Esto refleja estrategias de venta fundamentalmente distintas.</li>
+    <li><strong>El volumen se concentra en productos baratos:</strong> el segmento de menor precio contiene la mayor cantidad de registros del catálogo.</li>
+    <li><strong>Rating consistente entre segmentos:</strong> las calificaciones oscilan en un rango estrecho (3.9–4.3), indicando que Amazon filtra productos de muy baja calidad o que los compradores perciben calidad aceptable en todos los rangos de precio.</li>
   </ul>
 </div>
 
 <div class="card">
   <h2>Selección del número de clústeres</h2>
   <p>
-    Se eligió <strong>K = 4</strong> mediante el método del codo: la inercia decrece
-    significativamente de K=1 a K=4, y a partir de K=5 la reducción se vuelve marginal.
-    Desde la perspectiva de negocio, 4 segmentos son interpretables y accionables.
+    Se eligió <strong>K = 4</strong> mediante el método del codo: la inercia cae de forma
+    pronunciada de K=1 a K=4; a partir de K=5 las mejoras son marginales. Los 4 segmentos
+    son coherentes con la intuición de negocio de Amazon (económico/alto descuento, premium
+    de nicho, estrella de alta popularidad, rango medio) y son suficientemente granulares
+    para ser accionables.
   </p>
 </div>
 
 <div class="card">
   <h2>Conclusiones</h2>
   <ol>
-    <li>El algoritmo K-Means identificó <strong>{{ info.n_clusters }} segmentos</strong> con perfiles comerciales diferenciados en el catálogo de Amazon India.</li>
-    <li>Las variables de <strong>precio y popularidad</strong> son las más determinantes para la separación de los grupos.</li>
-    <li>La <strong>normalización previa</strong> fue esencial: sin ella, el precio habría dominado la distancia euclidiana y distorsionado el agrupamiento.</li>
-    <li>Las marcas pueden usar esta segmentación para <strong>diseñar estrategias diferenciadas</strong>: descuentos para productos del clúster económico, campañas de visibilidad para los de nicho y refuerzo de los productos estrella.</li>
+    <li>K-Means identificó <strong>{{ info.n_clusters }} segmentos</strong> con perfiles comerciales diferenciados, sin requerir etiquetas previas.</li>
+    <li>El <strong>número total de calificaciones</strong> es el factor más diferenciador, con implicaciones directas en estrategias de marketing.</li>
+    <li>La <strong>normalización previa</strong> fue esencial: sin ella, los precios (en miles de rupias) habrían dominado la distancia euclidiana y distorsionado el agrupamiento.</li>
+    <li>La gráfica PCA 2D confirma que los clústeres están razonablemente separados y que los centroides se ubican en regiones diferenciadas del espacio, validando que K-Means encontró grupos genuinamente distintos.</li>
+    <li>Las marcas pueden usar esta segmentación para <strong>diseñar estrategias diferenciadas</strong>: descuentos para el segmento económico, campañas de visibilidad para el nicho y refuerzo de los productos estrella.</li>
     <li>El método del codo confirma que <strong>K=4 es el punto de equilibrio</strong> entre complejidad del modelo e interpretabilidad de los resultados.</li>
   </ol>
 </div>

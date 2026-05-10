@@ -18,7 +18,7 @@
   <div class="concept-card">
     <div class="concept-card__icon"><i class="fa-solid fa-ruler"></i></div>
     <h3>Distancia Euclidiana</h3>
-    <p>Métrica usada para asignar cada punto al centroide más cercano: d = √Σ(xᵢ − μᵢ)². Las variables se normalizan antes para que todas contribuyan por igual.</p>
+    <p>Métrica usada para asignar cada punto al centroide más cercano:<br><code>d(xᵢ, μₖ) = √Σⱼ(xᵢⱼ − μₖⱼ)²</code><br>Las variables se normalizan antes para que todas contribuyan por igual a la distancia.</p>
   </div>
 
   <div class="concept-card">
@@ -48,7 +48,7 @@
   <div class="concept-card">
     <div class="concept-card__icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
     <h3>K-Means++</h3>
-    <p>Estrategia de inicialización que dispersa los centroides iniciales, reduciendo el riesgo de converger a un mínimo local. Se activa con <code>init='k-means++'</code>.</p>
+    <p>Estrategia de inicialización inteligente que coloca los centroides con mayor separación inicial, reduciendo la probabilidad de convergencia a mínimos locales. Scikit-learn lo usa <strong>por defecto</strong> con <code>init='k-means++'</code>.</p>
   </div>
 
   <div class="concept-card">
@@ -62,11 +62,11 @@
 <div class="card" style="margin-top: 24px">
   <h2>Algoritmo paso a paso</h2>
   <div class="steps">
-    <div class="step"><p>Elegir K centroides iniciales (aleatorios o con K-Means++).</p></div>
-    <div class="step"><p>Asignar cada punto al centroide más cercano usando distancia euclidiana en espacio normalizado.</p></div>
-    <div class="step"><p>Recalcular cada centroide como el promedio de los puntos de su clúster.</p></div>
-    <div class="step"><p>Repetir pasos 2 y 3 hasta convergencia o hasta alcanzar el máximo de iteraciones.</p></div>
-    <div class="step"><p>Evaluar la calidad con la inercia total e interpretar las características de cada clúster.</p></div>
+    <div class="step"><p>Seleccionar K centroides iniciales. Scikit-learn usa por defecto <strong>K-Means++</strong>, que los coloca con mayor separación para reducir la probabilidad de converger a mínimos locales.</p></div>
+    <div class="step"><p>Asignar cada punto xᵢ al clúster cuyo centroide minimiza la distancia euclidiana: <code>d(xᵢ, μₖ) = √Σⱼ(xᵢⱼ − μₖⱼ)²</code></p></div>
+    <div class="step"><p>Recalcular cada centroide como la media de todos los puntos asignados a ese clúster.</p></div>
+    <div class="step"><p>Repetir pasos 2 y 3 hasta que las asignaciones no cambien entre iteraciones (convergencia) o se alcance el máximo de iteraciones.</p></div>
+    <div class="step"><p>Evaluar la calidad con la inercia total e interpretar el perfil de cada clúster a partir de sus centroides.</p></div>
   </div>
 </div>
 
